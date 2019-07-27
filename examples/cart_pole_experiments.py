@@ -31,20 +31,19 @@ def run_experiment_with_result_files(folder,
     :param folder: folder for experiment result files
     :return: None
     """
-    experiment_file_name_prefix = "{}/experiment_{}_{}_{}_{}_{}_{}_{}_{}_{}_{}_".format(
+    experiment_file_name_prefix = "{}/experiment_{}_{}_{}_{}_{:.0f}_{}_{}_{}_{}_{}_".format(
         folder,
         n_experiments,
         n_episodes,
         m_trolley,
         m_load,
-        phi1_start,
+        phi1_start*180/math.pi,
         w1_start,
         time_step,
         positive_reward,
         negative_reward,
-        force,
+        force
     )
-    n_episodes = 200
     _, episodes_lengths, exec_times = run_experiments(n_experiments=n_experiments,
                                                       n_episodes=n_episodes,
                                                       visualize=visualize,
@@ -58,8 +57,14 @@ def run_experiment_with_result_files(folder,
                                                       force=force,
                                                       log_level=log_level)
 
-    np.transpose(episodes_lengths).tofile(experiment_file_name_prefix + "episodes_lengths.csv", )
-    exec_times.tofile(experiment_file_name_prefix + "exec_times.csv", )
+    np.savetxt(fname=experiment_file_name_prefix + "episodes_lengths.csv",
+               X=np.transpose(episodes_lengths),
+               delimiter=",",
+               fmt="%d")
+    np.savetxt(fname=experiment_file_name_prefix + "exec_times.csv",
+               X=np.array(exec_times),
+               delimiter=",",
+               fmt="%.4f")
 
 
 if __name__ == "__main__":
@@ -68,8 +73,8 @@ if __name__ == "__main__":
 
     for f in [5, 11, 17]:
         run_experiment_with_result_files(folder,
-                                         n_experiments=10,
-                                         n_episodes=200,
+                                         n_experiments=2,
+                                         n_episodes=4,
                                          visualize=False,
                                          m_trolley=10,
                                          m_load=1,
@@ -79,4 +84,4 @@ if __name__ == "__main__":
                                          positive_reward=1,
                                          negative_reward=-100,
                                          force=f,
-                                         log_level=logging.DEBUG)
+                                         log_level=logging.INFO)

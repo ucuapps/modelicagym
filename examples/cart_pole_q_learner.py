@@ -13,7 +13,7 @@ def cart_pole_train_qlearning(cart_pole_env, max_number_of_steps=500, n_episodes
     :param max_number_of_steps: maximum episode length.
     :param n_episodes: number of episodes to perform.
     :param visualize: flag if experiments should be rendered.
-    :return: trained Q-learning agent, array of actual episodes length, execution time in ms
+    :return: trained Q-learning agent, array of actual episodes length, execution time in s
     """
 
     start = time.time()
@@ -156,15 +156,17 @@ def run_experiments(n_experiments=1,
     }
 
     from gym.envs.registration import register
+    env_name = "JModelicaCSCartPoleEnv-v0"
+
     register(
-        id="JModelicaCSCartPoleEnv-v0",
+        id=env_name,
         entry_point='examples:JModelicaCSCartPoleEnv',
         kwargs=config
     )
     trained_agent_s =[]
     episodes_length_s = []
     exec_time_s = []
-    env = gym.make("JModelicaCSCartPoleEnv-v0")
+    env = gym.make(env_name)
     for i in range(n_experiments):
         trained_agent, episodes_length, exec_time = cart_pole_train_qlearning(env,
                                                                               n_episodes=n_episodes,
@@ -175,12 +177,14 @@ def run_experiments(n_experiments=1,
         env.reset()
 
     env.close()
+    # delete registered environment to avoid errors in future runs.
+    del gym.envs.registry.env_specs[env_name]
     return trained_agent_s, episodes_length_s, exec_time_s
 
 
 if __name__ == "__main__":
     _, episodes_lengths, exec_times = run_experiments()
-    print("Experiment length {} s".format(exec_times[0] / 1000))
+    print("Experiment length {} s".format(exec_times[0]))
     print(u"Avg episode performance {} {} {}".format(episodes_lengths[0].mean(),
                                                      chr(177),  # plus minus sign
                                                      episodes_lengths[0].std()))
