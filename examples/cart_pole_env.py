@@ -8,7 +8,7 @@ import logging
 import math
 import numpy as np
 from gym import spaces
-from modelicagym.environment import JModCSEnv, ModelicaType
+from modelicagym.environment import ModelicaCSEnv, ModelicaType
 
 logger = logging.getLogger(__name__)
 
@@ -17,7 +17,7 @@ NINETY_DEGREES_IN_RAD = (90 / 180) * math.pi
 TWELVE_DEGREES_IN_RAD = (12 / 180) * math.pi
 
 
-class CSCartPoleEnv(JModCSEnv):
+class CSCartPoleEnv(ModelicaCSEnv):
     """
     Environment for CartPole experiments. Allows both JModelica and Dymola compiled FMU's.
     Implements all methods for connection to the OpenAI GYm as an environment.
@@ -63,18 +63,18 @@ class CSCartPoleEnv(JModCSEnv):
             'model_output_names': ['s', 'v', 'phi1', 'w'],
             'model_parameters': {'m_trolley': m_trolley, 'm_load': m_load,
                                  'phi1_start': phi1_start, 'w1_start': w1_start},
-            'initial_state': (0, 0, -80 / 180 * math.pi, 0),
+            'initial_state': (0, 0, 85 / 180 * math.pi, 0),
             'time_step': time_step,
             'positive_reward': positive_reward,
             'negative_reward': negative_reward
         }
-        # loads cFMU corresponding to the Modelica type required
+        # loads FMU corresponding to the Modelica type required
         if modelica_type == ModelicaType.Dymola:
             super().__init__("../resources/dymola/linux/Pendel_Komponenten_Pendulum.fmu",
-                         config, log_level)
+                             config, modelica_type, log_level)
         elif modelica_type == ModelicaType.JModelica:
             super().__init__("../resources/jmodelica/linux/Pendel_Komponenten_Pendulum.fmu",
-                             config, log_level)
+                             config, modelica_type, log_level)
 
     # modelicagym API implementation
     def _is_done(self):
