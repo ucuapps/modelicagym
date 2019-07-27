@@ -13,6 +13,8 @@ You can test working environment by running
 
 ## Examples
 Examples of usage of both packages can be found in examples folder.
+* [Tutorial](https://github.com/OlehLuk/modelica-gym/blob/master/docs/fmu_integration_tutorial.md) explains how to integrate FMU using this toolbox in a step-wise manner. CartPole problem is considered as an illustrative example for the tutorial. Code from [cart_pole_env.py](https://github.com/OlehLuk/modelica-gym/blob/master/examples/cart_pole_env.py) is referenced and described in details.
+
 * [cart_pole_env.py](https://github.com/OlehLuk/modelica-gym/blob/master/examples/cart_pole_env.py) 
 is an example how a specific FMU can be integrated to an OpenAI Gym as an environment. Classic cart-pole environment is considered. 
 Corresponding FMU's can be found in the resources folder.
