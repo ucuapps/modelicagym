@@ -3,6 +3,7 @@ import gym
 from gymalgs.rl import QLearner
 import numpy as np
 import math
+import time
 
 
 def cart_pole_train_qlearning(cart_pole_env, max_number_of_steps=200, n_episodes=4, visualize=True):
@@ -12,8 +13,10 @@ def cart_pole_train_qlearning(cart_pole_env, max_number_of_steps=200, n_episodes
     :param max_number_of_steps: maximum episode length.
     :param n_episodes: number of episodes to perform.
     :param visualize: flag if experiments should be rendered.
-    :return: trained Q-learning agent, array of actual episodes length.
+    :return: trained Q-learning agent, array of actual episodes length, execution time in ms
     """
+
+    start = time.time()
     n_outputs = cart_pole_env.observation_space.shape[0]
 
     episode_lengths = np.array([])
@@ -57,8 +60,9 @@ def cart_pole_train_qlearning(cart_pole_env, max_number_of_steps=200, n_episodes
             if done or step == max_number_of_steps - 1:
                 episode_lengths = np.append(episode_lengths, int(step + 1))
                 break
-
-    return learner, episode_lengths
+    end = time.time()
+    execution_time = end - start
+    return learner, episode_lengths, execution_time
 
 
 # Internal logic for state discretization
@@ -155,7 +159,8 @@ def run_experiment(m_trolley=10, m_load=1,
 
 
 if __name__ == "__main__":
-    _, last_time_steps = run_experiment()
+    _, last_time_steps, exec_time = run_experiment()
+    print("Experiment length {} s".format(exec_time / 1000))
     print(u"Avg episode performance {} {} {}".format(last_time_steps.mean(),
                                                      chr(177),  # plus minus sign
                                                      last_time_steps.std()))
