@@ -107,18 +107,25 @@ def _get_state_index(state_bins):
     return state
 
 
-def run_experiment(m_trolley=10, m_load=1,
-                   phi1_start=85/180*math.pi,
-                   w1_start=0,
-                   time_step=0.05,
-                   positive_reward=1,
-                   negative_reward=-100,
-                   force=12,
-                   log_level=logging.DEBUG):
+def run_experiments(n_experiments=1,
+                    visualize=False,
+                    m_trolley=10,
+                    m_load=1,
+                    phi1_start=85/180*math.pi,
+                    w1_start=0,
+                    time_step=0.05,
+                    positive_reward=1,
+                    negative_reward=-100,
+                    force=12,
+                    log_level=logging.DEBUG):
     """
     Wrapper for running experiment of q-learning training on cart pole environment.
     Is responsible for environment creation and closing, sets all necessary parameters of environment.
+    Runs n exepriments, where each experiment is training Q-learning agent on the same environment.
+    After one agent finished training, environment is reset to the initial state.
     Parameters of the experiment:
+    :param visualize: boolean flag if experiments should be rendered
+    :param n_experiments: number of experiments to perform.
     :param log_level: level of logging that should be used by environment during experiments.
     :param force: magnitude to be applied during experiment at each time step.
 
@@ -152,17 +159,26 @@ def run_experiment(m_trolley=10, m_load=1,
         entry_point='examples:JModelicaCSCartPoleEnv',
         kwargs=config
     )
+    trained_agent_s =[]
+    episodes_length_s = []
+    exec_time_s = []
     env = gym.make("JModelicaCSCartPoleEnv-v0")
-    res = cart_pole_train_qlearning(env, visualize=True)
+    for i in range(n_experiments):
+        trained_agent, episodes_length, exec_time = cart_pole_train_qlearning(env, visualize=visualize)
+        trained_agent_s.append(trained_agent)
+        episodes_length_s.append(episodes_length)
+        exec_time_s.append(exec_time)
+        env.reset()
+
     env.close()
-    return res
+    return trained_agent_s, episodes_length_s, exec_time_s
 
 
 if __name__ == "__main__":
-    _, last_time_steps, exec_time = run_experiment()
-    print("Experiment length {} s".format(exec_time / 1000))
-    print(u"Avg episode performance {} {} {}".format(last_time_steps.mean(),
+    _, episodes_lengths, exec_times = run_experiments()
+    print("Experiment length {} s".format(exec_times[0] / 1000))
+    print(u"Avg episode performance {} {} {}".format(episodes_lengths[0].mean(),
                                                      chr(177),  # plus minus sign
-                                                     last_time_steps.std()))
-    print(u"Max episode performance {}".format(last_time_steps.max()))
-    print(u"All episodes performance {}".format(last_time_steps))
+                                                     episodes_lengths[0].std()))
+    print(u"Max episode performance {}".format(episodes_lengths[0].max()))
+    print(u"All episodes performance {}".format(episodes_lengths))
