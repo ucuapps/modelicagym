@@ -6,7 +6,7 @@ import math
 import time
 
 
-def cart_pole_train_qlearning(cart_pole_env, max_number_of_steps=200, n_episodes=4, visualize=True):
+def cart_pole_train_qlearning(cart_pole_env, max_number_of_steps=500, n_episodes=4, visualize=True):
     """
     Runs one experiment of Q-learning training on cart pole environment
     :param cart_pole_env: environment RL agent will learn on.
@@ -108,6 +108,7 @@ def _get_state_index(state_bins):
 
 
 def run_experiments(n_experiments=1,
+                    n_episodes=4,
                     visualize=False,
                     m_trolley=10,
                     m_load=1,
@@ -124,6 +125,7 @@ def run_experiments(n_experiments=1,
     Runs n exepriments, where each experiment is training Q-learning agent on the same environment.
     After one agent finished training, environment is reset to the initial state.
     Parameters of the experiment:
+    :param n_episodes: number of episodes to perform in each experiment run
     :param visualize: boolean flag if experiments should be rendered
     :param n_experiments: number of experiments to perform.
     :param log_level: level of logging that should be used by environment during experiments.
@@ -164,7 +166,9 @@ def run_experiments(n_experiments=1,
     exec_time_s = []
     env = gym.make("JModelicaCSCartPoleEnv-v0")
     for i in range(n_experiments):
-        trained_agent, episodes_length, exec_time = cart_pole_train_qlearning(env, visualize=visualize)
+        trained_agent, episodes_length, exec_time = cart_pole_train_qlearning(env,
+                                                                              n_episodes=n_episodes,
+                                                                              visualize=visualize)
         trained_agent_s.append(trained_agent)
         episodes_length_s.append(episodes_length)
         exec_time_s.append(exec_time)
