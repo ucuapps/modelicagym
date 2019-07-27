@@ -68,13 +68,14 @@ def run_experiment_with_result_files(folder,
 
 
 if __name__ == "__main__":
-
+    import time
+    start = time.time()
     folder = "experiments_results"
 
     for f in [5, 11, 17]:
         run_experiment_with_result_files(folder,
-                                         n_experiments=2,
-                                         n_episodes=4,
+                                         n_experiments=5,
+                                         n_episodes=100,
                                          visualize=False,
                                          m_trolley=10,
                                          m_load=1,
@@ -85,3 +86,5 @@ if __name__ == "__main__":
                                          negative_reward=-100,
                                          force=f,
                                          log_level=logging.INFO)
+    end = time.time()
+    print("Total execution time {:.2f} seconds".format(end-start))
