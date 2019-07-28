@@ -41,7 +41,6 @@ class ModelicaCSEnv(ModelicaBaseEnv):
         self.model.reset()
         # particularity of FMU exported from JModelica
         if self.type == ModelicaType.JModelica:
-            print(ModelicaType.JModelica)
             self.model.setup_experiment(start_time=0)
 
         self._set_init_parameter()

@@ -67,24 +67,82 @@ def run_experiment_with_result_files(folder,
                fmt="%.4f")
 
 
-if __name__ == "__main__":
-    import time
-    start = time.time()
-    folder = "experiments_results"
-
-    for f in [5, 11, 17]:
+def force_experiment(fs):
+    for f in fs:
         run_experiment_with_result_files(folder,
                                          n_experiments=5,
                                          n_episodes=100,
                                          visualize=False,
                                          m_trolley=10,
                                          m_load=1,
-                                         phi1_start=85/180*math.pi,
+                                         phi1_start=85 / 180 * math.pi,
                                          w1_start=0,
                                          time_step=0.05,
                                          positive_reward=1,
                                          negative_reward=-100,
                                          force=f,
                                          log_level=logging.INFO)
+
+
+def mass_ratio_experiment(ms):
+    for m_cart, m_pole in ms:
+        run_experiment_with_result_files(folder,
+                                         n_experiments=5,
+                                         n_episodes=200,
+                                         visualize=False,
+                                         m_trolley=m_cart,
+                                         m_load=m_pole,
+                                         phi1_start=85 / 180 * math.pi,
+                                         w1_start=0,
+                                         time_step=0.05,
+                                         positive_reward=1,
+                                         negative_reward=-100,
+                                         force=15,
+                                         log_level=logging.INFO)
+
+
+def reward_ratio_experiment(rws):
+    for pos_rew, neg_rew in rws:
+        run_experiment_with_result_files(folder,
+                                         n_experiments=5,
+                                         n_episodes=200,
+                                         visualize=False,
+                                         m_trolley=10,
+                                         m_load=1,
+                                         phi1_start=85 / 180 * math.pi,
+                                         w1_start=0,
+                                         time_step=0.05,
+                                         positive_reward=pos_rew,
+                                         negative_reward=neg_rew,
+                                         force=15,
+                                         log_level=logging.INFO)
+
+
+def time_step_experiment(tss):
+    for ts in tss:
+        run_experiment_with_result_files(folder,
+                                         n_experiments=5,
+                                         n_episodes=200,
+                                         visualize=False,
+                                         m_trolley=10,
+                                         m_load=1,
+                                         phi1_start=85 / 180 * math.pi,
+                                         w1_start=0,
+                                         time_step=ts,
+                                         positive_reward=1,
+                                         negative_reward=-100,
+                                         force=15,
+                                         log_level=logging.INFO)
+
+
+if __name__ == "__main__":
+    import time
+    start = time.time()
+    folder = "experiments_results"
+    # following experiments rake significant amount of time, so it is advised to run only one of them at once
+    # force_experiment([5, 11, 17])
+    # mass_ratio_experiment([[1, 10], [5, 10], [10, 10], [10, 5], [10, 1]])
+    # reward_ratio_experiment([[1, -100], [1, -50], [1, -200],])
+    # time_step_experiment([0.01, 0.1, 0.5, 1])
     end = time.time()
     print("Total execution time {:.2f} seconds".format(end-start))
