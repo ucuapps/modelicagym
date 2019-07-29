@@ -2,7 +2,7 @@
 def test_pyfmi():
     from pyfmi import load_fmu
 
-    model = load_fmu("../resources/jmodelica/linux/Pendel_Komponenten_Pendulum.fmu",
+    model = load_fmu("../resources/jmodelica/linux/ModelicaGym_CartPole.fmu",
                      kind="CS")
 
     model.reset()
@@ -11,9 +11,9 @@ def test_pyfmi():
     opts = model.simulate_options()
     opts['ncp'] = 50
     opts['initialize'] = False
-    model.set("u", -1)
+    model.set("f", -1)
     model.simulate(start_time=0, final_time=2, options=opts)
-    model.set("u", -1)
+    model.set("f", -1)
     model.simulate(start_time=2, final_time=3, options=opts)
     print("PyFMI is available and successfully simulating.")
 

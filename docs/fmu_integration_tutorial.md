@@ -59,12 +59,12 @@ class CSCartPoleEnv(JModCSEnv):
     ...
 ```
 
-*Note*: in the `examples/cart_pole_env.py` environment class was inherited from ``ModelicaCSEnv`` class
-for code reduction, during toolbox testing purposes. I.e. to test toolbox we used 2 FMU's compiled from the same model description, but
- in different tools: Dymola and Jmodelica. As most logic was the same, such a workaround was used.
- 
- As having 2 FMU's of the some model exported from different tools is not an expected use cases, 
- please, use inheritance hierarchy advised above.
+*Note*: in the `examples/cart_pole_env.py` environment class was inherited from from both ``JModCSEnv`` 
+and ``CartPoleEnv`` classes to avoid code duplication, during toolbox testing. 
+All abstract logic of a cart-pole system was extracted into ``CartPoleEnv``.
+To test the toolbox capability to work with FMU's exported in different tools (Dymola, Modelica), 
+we used 2 FMU's compiled from the same model specification. 
+In this case, two environment classes should be written, but code extraction allowed to write common logic just once.
 
 ### Constructor and configuration
 Next, you should define class constructor. It is advised to use all model parameters as class attributes,
@@ -117,7 +117,7 @@ Then, we call initialization method of a parent class.
             'positive_reward': positive_reward,
             'negative_reward': negative_reward
         }
-        super().__init__("../resources/jmodelica/linux/Pendel_Komponenten_Pendulum.fmu",
+        super().__init__("../resources/jmodelica/linux/ModelicaGym_CartPole.fmu",
                              config, log_level)
 
 ```

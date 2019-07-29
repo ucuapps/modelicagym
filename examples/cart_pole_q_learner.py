@@ -108,10 +108,10 @@ def _get_state_index(state_bins):
 
 
 def run_experiments(n_experiments=1,
-                    n_episodes=4,
+                    n_episodes=10,
                     visualize=False,
-                    m_trolley=10,
-                    m_load=1,
+                    m_cart=10,
+                    m_pole=1,
                     phi1_start=85/180*math.pi,
                     w1_start=0,
                     time_step=0.05,
@@ -132,8 +132,8 @@ def run_experiments(n_experiments=1,
     :param force: magnitude to be applied during experiment at each time step.
 
     Parameters of the cart pole environment:
-    :param m_trolley: mass of cart.
-    :param m_load: mass of a pole.
+    :param m_cart: mass of cart.
+    :param m_pole: mass of a pole.
     :param phi1_start: angle of the pole. Is counted from the positive direction of X-axis. Specified in radians.
     1/2*pi means pole standing straight on the cast.
     :param w1_start: angle speed of the poles mass center. I.e. how fast pole angle is changing.
@@ -144,8 +144,8 @@ def run_experiments(n_experiments=1,
     that were returned from cart_pole_train_qlearning()
     """
     config = {
-        'm_trolley': m_trolley,
-        'm_load': m_load,
+        'm_cart': m_cart,
+        'm_pole': m_pole,
         'phi1_start': phi1_start,
         'w1_start': w1_start,
         'time_step': time_step,
@@ -183,7 +183,7 @@ def run_experiments(n_experiments=1,
 
 
 if __name__ == "__main__":
-    _, episodes_lengths, exec_times = run_experiments()
+    _, episodes_lengths, exec_times = run_experiments(visualize=True, log_level=logging.INFO)
     print("Experiment length {} s".format(exec_times[0]))
     print(u"Avg episode performance {} {} {}".format(episodes_lengths[0].mean(),
                                                      chr(177),  # plus minus sign
