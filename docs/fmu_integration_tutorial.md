@@ -4,8 +4,8 @@ This file describes in a step-wise manner
 how to integrate your FMU with OpenAI Gym as an environment.
 
 Instructions are illustrated with an example of cart-pole environment 
-simulated by FMU, that can be found in resources folder:
-`resources/jmodelica/linux/Pendel_Komponenten_Pendulum.fmu`
+simulated by FMU exported in co-simulation mode from JModelica. It can be found in resources folder:
+`resources/jmodelica/linux/ModelicaGym_CartPole_CS.fmu`
 
 ## Prerequisites
 
@@ -32,22 +32,24 @@ Current API assumes that your model has:
  
  For the cart pole FMU:
  1. these are staring conditions and model parameters:
-    * phi1_start - initial angle of a pole;
-    * w1_start - initial angle speed of a pole;
-    * m_trolley - mass of a cart;
-    * m_load - mass of a pole.
+    * theta_0 - angle of the pole, when experiment starts.
+        It is counted from the positive direction of X-axis. Specified in radians.
+        1/2*pi means pole standing straight on the cart.
+    * theta_dot_0 - initial angle speed of a pole;
+    * m_cart - mass of a cart;
+    * m_pole - mass of a pole.
  2. State variables:
-    * s - cart position;
-    * v - cart velocity;
-    * phi1 - pole angle;
-    * w - angle speed of pole.
+    * x - cart position;
+    * x_dot - cart velocity;
+    * theta - pole angle;
+    * theta_dot - angle speed of pole.
  3. Action:
-    * u - magnitude of the force applied to a cart.
+    * f - magnitude of the force applied to a cart at each time step.
  
 ## 2. Creating a class
 
 ### Inheritance hierarchy
-To use your FMU for simualtion of an environment in the Gym, 
+To use your FMU for simulation of an environment in the Gym, 
 you should create a class describing this environment. 
 
 All abstract logic and default behaviour was already implemented in a toolbox.
@@ -55,13 +57,13 @@ All abstract logic and default behaviour was already implemented in a toolbox.
 To reuse it inherit your class from `JModCSEnv` or `DymolaCSEnv`, depending on what tool you used to compile an FMU.
 
 ```python
-class CSCartPoleEnv(JModCSEnv):
+class JModelicaCSCartPoleEnv(JModCSEnv):
     ...
 ```
 
-*Note*: in the `examples/cart_pole_env.py` environment class was inherited from from both ``JModCSEnv`` 
-and ``CartPoleEnv`` classes to avoid code duplication, during toolbox testing. 
-All abstract logic of a cart-pole system was extracted into ``CartPoleEnv``.
+*Note*: in the `examples/cart_pole_env.py` environment class was also inherited from 
+``CartPoleEnv`` class to avoid code duplication, during toolbox testing. 
+This class contains all abstract logic of a cart-pole system.
 To test the toolbox capability to work with FMU's exported in different tools (Dymola, Modelica), 
 we used 2 FMU's compiled from the same model specification. 
 In this case, two environment classes should be written, but code extraction allowed to write common logic just once.
@@ -79,11 +81,11 @@ Here we initialize some attributes of the environment, like:
  We also set logging level.
  
 ```python
-    def __init__(self, modelica_type,
-                 m_trolley,
-                 m_load,
-                 phi1_start,
-                 w1_start,
+    def __init__(self,
+                 m_cart,
+                 m_pole,
+                 theta_0,
+                 theta_dot_0,
                  time_step,
                  positive_reward,
                  negative_reward,
@@ -108,18 +110,17 @@ Then, we call initialization method of a parent class.
 
 ```python
         config = {
-            'model_input_names': 'u',
-            'model_output_names': ['s', 'v', 'phi1', 'w'],
-            'model_parameters': {'m_trolley': m_trolley, 'm_load': m_load,
-                                 'phi1_start': phi1_start, 'w1_start': w1_start},
+            'model_input_names': 'f',
+            'model_output_names': ['x', 'x_dot', 'theta', 'theta_dot'],
+            'model_parameters': {'m_cart': m_cart, 'm_pole': m_pole,
+                                 'theta_0': theta_0, 'theta_dot_0': theta_dot_0},
             'initial_state': (0, 0, 85 / 180 * math.pi, 0),
             'time_step': time_step,
             'positive_reward': positive_reward,
             'negative_reward': negative_reward
         }
-        super().__init__("../resources/jmodelica/linux/ModelicaGym_CartPole.fmu",
-                             config, log_level)
-
+        super().__init__("../resources/jmodelica/linux/ModelicaGym_CartPole_CS.fmu",
+                         config, log_level)
 ```
 
 Configuration field have following meaning:
@@ -293,11 +294,11 @@ To visualize our experiments we will use built-in Gym tools:
             self.viewer.add_geom(track)
 
         # set new position according to the environment current state
-        x, _, phi, _ = self.state
+        x, _, theta, _ = self.state
         cart_x = x * scale + screen_width / 2.0  # MIDDLE OF CART
 
         self.cart_transform.set_translation(cart_x, cart_y)
-        self.pole_transform.set_rotation(phi - NINETY_DEGREES_IN_RAD)
+        self.pole_transform.set_rotation(theta - NINETY_DEGREES_IN_RAD)
 
         return self.viewer.render(return_rgb_array=mode == 'rgb_array')
 ```
@@ -318,7 +319,6 @@ Finally, we define, how to close the environment. In our case it just means end 
 ```
 
 Note: in `examples/cart_pole_env.py` file you will find ``DymolaCSCartPoleEnv`` and ``JModelicaCSCartPoleEnv``. 
-These are wrappers and as it was explained above, these is caused only by toolbox testing particularities.
-Don't reproduce such a hierarchy without strong justification.
+These are wrappers and as it was explained above, these is caused by toolbox testing particularities.
 
 ## Thank you for reading this to the end. If you reached this point, you are ready to use custom environments, simulated with FMU's. 

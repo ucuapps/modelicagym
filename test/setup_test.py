@@ -2,7 +2,7 @@
 def test_pyfmi():
     from pyfmi import load_fmu
 
-    model = load_fmu("../resources/jmodelica/linux/ModelicaGym_CartPole.fmu",
+    model = load_fmu("../resources/jmodelica/linux/ModelicaGym_CartPole_CS.fmu",
                      kind="CS")
 
     model.reset()

@@ -1,5 +1,5 @@
 """
-Classic cart-pole example implemented with an FMU describing inverted pendulum.
+Classic cart-pole example implemented with an FMU simulating a cart-pole system.
 Implementation inspired by OpenAI Gym examples:
 https://github.com/openai/gym/blob/master/gym/envs/classic_control/cartpole.py
 """
@@ -19,22 +19,11 @@ TWELVE_DEGREES_IN_RAD = (12 / 180) * math.pi
 
 class CartPoleEnv:
     """
-    Environment for CartPole experiments. Allows both JModelica and Dymola compiled FMU's.
-    Implements all methods for connection to the OpenAI GYm as an environment.
+    Class extracting common logic for JModelica and Dymola environments for CartPole experiments.
+    Allows to avoid code duplication.
+    Implements all methods for connection to the OpenAI Gym as an environment.
 
-    Attributes:
-        m_cart (float): mass of a cart.
 
-        m_pole (float): mass of a pole.
-
-        phi1_start (float): angle of the pole, when experiment starts.
-        It is counted from the positive direction of X-axis. Specified in radians.
-        1/2*pi means pole standing straight on the cast.
-
-        w1_start (float): angle speed of the poles mass center. I.e. how fast pole angle is changing.
-        time_step (float): time difference between simulation steps.
-        positive_reward (int): positive reward for RL agent.
-        negative_reward (int): negative reward for RL agent.
     """
 
 
@@ -159,11 +148,11 @@ class CartPoleEnv:
             self.viewer.add_geom(track)
 
         # set new position according to the environment current state
-        x, _, phi, _ = self.state
+        x, _, theta, _ = self.state
         cart_x = x * scale + screen_width / 2.0  # MIDDLE OF CART
 
         self.cart_transform.set_translation(cart_x, cart_y)
-        self.pole_transform.set_rotation(phi - NINETY_DEGREES_IN_RAD)
+        self.pole_transform.set_rotation(theta - NINETY_DEGREES_IN_RAD)
 
         return self.viewer.render(return_rgb_array=mode == 'rgb_array')
 
@@ -179,14 +168,27 @@ class CartPoleEnv:
 class JModelicaCSCartPoleEnv(CartPoleEnv, JModCSEnv):
     """
     Wrapper class for creation of cart-pole environment using JModelica-compiled FMU.
-    Attributes are the same as in CSCartPoleEnv class.
+
+    Attributes:
+        m_cart (float): mass of a cart.
+
+        m_pole (float): mass of a pole.
+
+        theta_0 (float): angle of the pole, when experiment starts.
+        It is counted from the positive direction of X-axis. Specified in radians.
+        1/2*pi means pole standing straight on the cast.
+
+        theta_dot_0 (float): angle speed of the poles mass center. I.e. how fast pole angle is changing.
+        time_step (float): time difference between simulation steps.
+        positive_reward (int): positive reward for RL agent.
+        negative_reward (int): negative reward for RL agent.
     """
 
     def __init__(self,
                  m_cart,
                  m_pole,
-                 phi1_start,
-                 w1_start,
+                 theta_0,
+                 theta_dot_0,
                  time_step,
                  positive_reward,
                  negative_reward,
@@ -206,22 +208,35 @@ class JModelicaCSCartPoleEnv(CartPoleEnv, JModCSEnv):
 
         config = {
             'model_input_names': 'f',
-            'model_output_names': ['s', 'v', 'phi1', 'w'],
+            'model_output_names': ['x', 'x_dot', 'theta', 'theta_dot'],
             'model_parameters': {'m_cart': m_cart, 'm_pole': m_pole,
-                                 'phi1_start': phi1_start, 'w1_start': w1_start},
+                                 'theta_0': theta_0, 'theta_dot_0': theta_dot_0},
             'initial_state': (0, 0, 85 / 180 * math.pi, 0),
             'time_step': time_step,
             'positive_reward': positive_reward,
             'negative_reward': negative_reward
         }
-        super().__init__("../resources/jmodelica/linux/ModelicaGym_CartPole.fmu",
+        super().__init__("../resources/jmodelica/linux/ModelicaGym_CartPole_CS.fmu",
                          config, log_level)
 
 
 class DymolaCSCartPoleEnv(CartPoleEnv, DymolaCSEnv):
     """
     Wrapper class for creation of cart-pole environment using Dymola-compiled FMU.
-    Attributes are the same as in CSCartPoleEnv class.
+
+    Attributes:
+        m_cart (float): mass of a cart.
+
+        m_pole (float): mass of a pole.
+
+        phi1_start (float): angle of the pole, when experiment starts.
+        It is counted from the positive direction of X-axis. Specified in radians.
+        1/2*pi means pole standing straight on the cast.
+
+        w1_start (float): angle speed of the poles mass center. I.e. how fast pole angle is changing.
+        time_step (float): time difference between simulation steps.
+        positive_reward (int): positive reward for RL agent.
+        negative_reward (int): negative reward for RL agent.
     """
 
     def __init__(self,
@@ -257,6 +272,6 @@ class DymolaCSCartPoleEnv(CartPoleEnv, DymolaCSEnv):
             'negative_reward': negative_reward
         }
         # loads FMU corresponding to the Modelica type required
-        super().__init__("../resources/dymola/linux/ModelicaGym_CartPole_2.fmu",
+        super().__init__("../resources/dymola/linux/ModelicaGym_CartPole.fmu",
                          config, log_level)
 

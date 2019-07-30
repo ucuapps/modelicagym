@@ -112,8 +112,8 @@ def run_experiments(n_experiments=1,
                     visualize=False,
                     m_cart=10,
                     m_pole=1,
-                    phi1_start=85/180*math.pi,
-                    w1_start=0,
+                    theta_0=85/180*math.pi,
+                    theta_dot_0=0,
                     time_step=0.05,
                     positive_reward=1,
                     negative_reward=-100,
@@ -134,9 +134,9 @@ def run_experiments(n_experiments=1,
     Parameters of the cart pole environment:
     :param m_cart: mass of cart.
     :param m_pole: mass of a pole.
-    :param phi1_start: angle of the pole. Is counted from the positive direction of X-axis. Specified in radians.
+    :param theta_0: angle of the pole. Is counted from the positive direction of X-axis. Specified in radians.
     1/2*pi means pole standing straight on the cast.
-    :param w1_start: angle speed of the poles mass center. I.e. how fast pole angle is changing.
+    :param theta_dot_0: angle speed of the poles mass center. I.e. how fast pole angle is changing.
     :param time_step: time difference between simulation steps.
     :param positive_reward: positive reward for RL agent.
     :param negative_reward: negative reward for RL agent.
@@ -146,8 +146,8 @@ def run_experiments(n_experiments=1,
     config = {
         'm_cart': m_cart,
         'm_pole': m_pole,
-        'phi1_start': phi1_start,
-        'w1_start': w1_start,
+        'theta_0': theta_0,
+        'theta_dot_0': theta_dot_0,
         'time_step': time_step,
         'positive_reward': positive_reward,
         'negative_reward': negative_reward,
