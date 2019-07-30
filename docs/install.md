@@ -1,6 +1,6 @@
 ## Installation instructions
 ### Test setup description
-Toolbox was tested using on the following setup:
+Toolbox was tested on the following setup:
 
 * Ubuntu 18 64 Bit machine
 * Python 3.6.8
