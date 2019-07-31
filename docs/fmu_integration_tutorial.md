@@ -114,7 +114,6 @@ Then, we call initialization method of a parent class.
             'model_output_names': ['x', 'x_dot', 'theta', 'theta_dot'],
             'model_parameters': {'m_cart': m_cart, 'm_pole': m_pole,
                                  'theta_0': theta_0, 'theta_dot_0': theta_dot_0},
-            'initial_state': (0, 0, 85 / 180 * math.pi, 0),
             'time_step': time_step,
             'positive_reward': positive_reward,
             'negative_reward': negative_reward
@@ -127,7 +126,6 @@ Configuration field have following meaning:
 * ``model_input_names`` and ``model_output_names`` are names of model inputs and outputs
  that we clarified on previous step.
  *  ``model_parameters`` is dictionary of names of model parameters with the corresponding values.
- * ``initial_state`` is a tuple of values for ``model_output_names``.
  * ``time_step`` is a time interval between simulation steps in the environment.
  * ``positive_reward`` and ``negative_reward`` are positive and negative reward to be used 
  in default reward policy. We will discuss it on the next step.
