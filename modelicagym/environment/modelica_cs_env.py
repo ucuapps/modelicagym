@@ -23,7 +23,7 @@ class ModelicaCSEnv(ModelicaBaseEnv):
         """
         self.type = type
         logger.setLevel(log_level)
-        super().__init__(model_path, config, log_level)
+        super().__init__(model_path, "CS", config, log_level)
 
     def reset(self):
         """

@@ -47,11 +47,11 @@ class ModelicaBaseEnv(gym.Env):
     All methods called on model are from implemented PyFMI API.
     """
 
-    def __init__(self, model_path, config, log_level):
+    def __init__(self, model_path, mode, config, log_level):
         """
 
         :param model_path: path to the model FMU. Absolute path is advised.
-
+        :param mode: FMU exporting mode "CS" or "ME"
         :param config: dictionary with model specifications:
             model_input_names - names of parameters to be used as action.
             model_output_names - names of parameters to be used as state descriptors.
@@ -63,12 +63,17 @@ class ModelicaBaseEnv(gym.Env):
 
         :param log_level: level of logging to be used
         """
+
         logger.setLevel(log_level)
+        if mode != 'CS' and mode != 'ME':
+            logger.warning("Mode should be either CS or ME. Actual value {}. Trying to load in CS mode".format(mode))
+            mode = 'CS'
+
         # load model from fmu
         self.model_name = model_path.split(os.path.sep)[-1]
 
         logger.debug("Loading model {}".format(self.model_name))
-        self.model = load_fmu(model_path, kind='CS', log_file_name=self.get_log_file_name())
+        self.model = load_fmu(model_path, kind=mode, log_file_name=self.get_log_file_name())
         logger.debug("Successfully loaded model {}".format(self.model_name))
         # if you reward policy is different from just reward/penalty - implement custom step method
         self.positive_reward = config.get('positive_reward')
@@ -248,5 +253,5 @@ class ModelicaMEEnv(ModelicaBaseEnv):
     FMU exported in a model-exchange mode.
     Should be used as a superclass for all such environments.
     """
-    def __init__(self, model_path, config, type):
-        super().__init__(model_path, config)
+    def __init__(self, model_path, config, log_level):
+        super().__init__(model_path, "ME", config, log_level)
