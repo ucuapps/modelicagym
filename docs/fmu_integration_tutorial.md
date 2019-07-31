@@ -143,7 +143,7 @@ def _reward_policy(self):
 ```
 
 In the same manner you can override any logic you like. This makes our toolbox very flexible.
-However, for usual use cases only custom logic in ``_reward_policy`` and ``_is_done`` is required
+However, for usual use cases only custom logic in ``_is_done`` is required
 
 Implementation of some other methods is required. These are: 
 ``_is_done``, ``_get_action_space``, ``_get_observation_space``, ``step`` and 
