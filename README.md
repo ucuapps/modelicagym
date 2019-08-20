@@ -1,4 +1,11 @@
-# modelica-gym
+<img src="logo.png" alt="modelicagym_logo" width="200"/>
+
+# modelica-gym 
+
+This *ModelicaGym* toolbox was developed to employ Reinforcement Learning (RL) for solving optimization and control tasks in Modelica models. The developed tool allows connecting models using Functional Mock-up Interface (FMI) to OpenAI Gym toolkit in order to exploit Modelica equation-based modelling and co-simulation together with RL algorithms as a functionality of the tools correspondingly. Thus, *ModelicaGym* facilitates fast and convenient development of RL algorithms and their comparison when solving optimal control problem for Modelica dynamic models. 
+
+Inheritance structure of the *ModelicaGym* toolbox classes and the implemented methods are discussed in details in examples. The toolbox functionality validation is performed on the Cart-Pole balancing problem. This includes physical system model description and it's integration in the toolbox, experiments on selection and influence of the model parameters (i.e. force magnitude, Cart-pole mass ratio, reward ratio, and simulation time step) on the learning process of Q-learning algorithm supported with discussion of the simulation results. 
+
 Repository contains:
 * `modelicagym.environments` package for integration of FMU as an environment to OpenAI Gym.
 FMU is a functional model unit exported from one of the main Modelica tools, e.g. Dymola(proprietary) or JModelica(open source).
