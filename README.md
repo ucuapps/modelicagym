@@ -1,6 +1,6 @@
 <img src="logo.png" alt="modelicagym_logo" width="200"/>
 
-# ModelicaGym 
+# ModelicaGym: Applying Reinforcement Learning to Modelica Models
 
 This *ModelicaGym* toolbox was developed to employ Reinforcement Learning (RL) for solving optimization and control tasks in Modelica models. The developed tool allows connecting models using Functional Mock-up Interface (FMI) to OpenAI Gym toolkit in order to exploit Modelica equation-based modelling and co-simulation together with RL algorithms as a functionality of the tools correspondingly. Thus, *ModelicaGym* facilitates fast and convenient development of RL algorithms and their comparison when solving optimal control problem for Modelica dynamic models. 
 
