@@ -1,6 +1,6 @@
 <img src="logo.png" alt="modelicagym_logo" width="200"/>
 
-# modelica-gym 
+# ModelicaGym: Applying Reinforcement Learning to Modelica Models
 
 This *ModelicaGym* toolbox was developed to employ Reinforcement Learning (RL) for solving optimization and control tasks in Modelica models. The developed tool allows connecting models using Functional Mock-up Interface (FMI) to OpenAI Gym toolkit in order to exploit Modelica equation-based modelling and co-simulation together with RL algorithms as a functionality of the tools correspondingly. Thus, *ModelicaGym* facilitates fast and convenient development of RL algorithms and their comparison when solving optimal control problem for Modelica dynamic models. 
 
@@ -13,18 +13,18 @@ Currently only FMU's exported in co-simulation mode are supported.
 * `gymalgs.rl` package for Reinforcement Learning algorithms compatible to OpenAI Gym environments.
 
 ## Instalation
-Full instalation guide is available [here](https://github.com/OlehLuk/modelica-gym/blob/master/docs/install.md).
+Full instalation guide is available [here](https://github.com/OlehLuk/modelicagym/blob/master/docs/install.md).
 
 You can test working environment by running 
-[./test_setup.py](https://github.com/OlehLuk/modelica-gym/blob/master/test/setup_test.py) script.
+[./test_setup.py](https://github.com/OlehLuk/modelicagym/blob/master/test/setup_test.py) script.
 
 ## Examples
 Examples of usage of both packages can be found in examples folder.
-* [Tutorial](https://github.com/OlehLuk/modelica-gym/blob/master/docs/fmu_integration_tutorial.md) explains how to integrate FMU using this toolbox in a step-wise manner. CartPole problem is considered as an illustrative example for the tutorial. Code from [cart_pole_env.py](https://github.com/OlehLuk/modelica-gym/blob/master/examples/cart_pole_env.py) is referenced and described in details.
+* [Tutorial](https://github.com/OlehLuk/modelicagym/blob/master/docs/fmu_integration_tutorial.md) explains how to integrate FMU using this toolbox in a step-wise manner. CartPole problem is considered as an illustrative example for the tutorial. Code from [cart_pole_env.py](https://github.com/OlehLuk/modelicagym/blob/master/examples/cart_pole_env.py) is referenced and described in details.
 
-* [cart_pole_env.py](https://github.com/OlehLuk/modelica-gym/blob/master/examples/cart_pole_env.py) 
+* [cart_pole_env.py](https://github.com/OlehLuk/modelicagym/blob/master/examples/cart_pole_env.py) 
 is an example how a specific FMU can be integrated to an OpenAI Gym as an environment. Classic cart-pole environment is considered. 
 Corresponding FMU's can be found in the resources folder.
 
-* [cart_pole_q_learner.py](https://github.com/OlehLuk/modelica-gym/blob/master/examples/cart_pole_q_learner.py) 
+* [cart_pole_q_learner.py](https://github.com/OlehLuk/modelicagym/blob/master/examples/cart_pole_q_learner.py) 
 is an example of Q-learning algorithm application. Agent is trained on the Cart-pole environment simulated with an FMU. Its' integration is described in previous example.
