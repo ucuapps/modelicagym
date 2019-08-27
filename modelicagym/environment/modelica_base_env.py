@@ -141,8 +141,9 @@ class ModelicaBaseEnv(gym.Env):
 
         # Check if number of model inputs equals number of values passed
         if len(action) != len(list(self.model_input_names)):
-            message = "List of values for model inputs should be of the length " \
-                      "equal to the number of model inputs"
+            message = "List of values for model inputs should be of the length {}," \
+                      "equal to the number of model inputs. Actual length {}".format(
+                len(list(self.model_input_names)), len(action))
             logging.error(message)
             raise ValueError(message)
 

@@ -207,7 +207,7 @@ class JModelicaCSCartPoleEnv(CartPoleEnv, JModCSEnv):
         self.cart_transform = None
 
         config = {
-            'model_input_names': 'f',
+            'model_input_names': ['f'],
             'model_output_names': ['x', 'x_dot', 'theta', 'theta_dot'],
             'model_parameters': {'m_cart': m_cart, 'm_pole': m_pole,
                                  'theta_0': theta_0, 'theta_dot_0': theta_dot_0},
@@ -262,7 +262,7 @@ class DymolaCSCartPoleEnv(CartPoleEnv, DymolaCSEnv):
         self.cart_transform = None
 
         config = {
-            'model_input_names': 'u',
+            'model_input_names': ['u'],
             'model_output_names': ['s', 'v', 'phi1', 'w'],
             'model_parameters': {'m_trolley': m_cart, 'm_load': m_pole,
                                  'phi1_start': phi1_start, 'w1_start': w1_start},
