@@ -132,11 +132,8 @@ angVel
                             grid={2,2})),
                     Documentation(info="<html>
     
-    Model of a simple double pendulum system. <br>
-    The physical Model is used in Modelica_LinearSystems2.Examples.StateSpace.doublePendulumController where it is being
-    linearized an used as a base for linear controller design. The results are used to control the crane system
-    in Modelica_LinearSystems2.Controller.Examples.DoublePendulum.mo
-    
+    Model of a simple cart-pole system. <br>
+    It is based on the inverted pendulum formulation.
     </html>"),
                     Icon(coordinateSystem(preserveAspectRatio=true, extent={{-150,-100},{150,
                                     100}}), graphics={
