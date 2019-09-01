@@ -1,19 +1,31 @@
 import logging
 import gym
-from gymalgs.rl import QLearner
+from gymalgs.rl import BDP
 import numpy as np
 import math
 import time
 
 
-def cart_pole_train_qlearning(cart_pole_env, max_number_of_steps=500, n_episodes=4, visualize=True):
+def cart_pole_train_bdp(cart_pole_env,
+                        max_number_of_steps=500,
+                        n_episodes=4,
+                        discount_factor=0.95,
+                        policy_update_interval=0,
+                        dirichlet_smoothing_const=1,
+                        default_reward=1,
+                        visualize=True):
     """
-    Runs one experiment of Q-learning training on cart pole environment
+    Runs one experiment of BDP training on cart pole environment
+    :param default_reward: default reward. Is used until the actual value is learnt from observations.
+    :param dirichlet_smoothing_const: constant for smoothing observation counts
+    :param policy_update_interval: the number of interactions with the environment, after which policy is updated.
+    0 value - update on episode's end.
+    :param discount_factor: discount parameter for the future reward in the corresponding MDP
     :param cart_pole_env: environment RL agent will learn on.
     :param max_number_of_steps: maximum episode length.
     :param n_episodes: number of episodes to perform.
     :param visualize: flag if experiments should be rendered.
-    :return: trained Q-learning agent, array of actual episodes length, execution time in s
+    :return: trained BDP agent, array of actual episodes length, execution time in s
     """
 
     start = time.time()
@@ -26,12 +38,15 @@ def cart_pole_train_qlearning(cart_pole_env, max_number_of_steps=500, n_episodes
     phi_bins = _get_bins(78/180*math.pi, 102/180*math.pi, 10)
     phi_dot_bins = _get_bins(-2, 2, 10)
 
-    learner = QLearner(n_states=10 ** n_outputs,
-                       n_actions=cart_pole_env.action_space.n,
-                       learning_rate=0.2,
-                       discount_factor=1,
-                       exploration_rate=0.5,
-                       exploration_decay_rate=0.99)
+    # learner = BayesianDynamicProgramming(dirichlet_param=1, reward_param=1, T=30, num_states=10**n_outputs,
+    #                                     num_actions=cart_pole_env.action_space.n, discount_factor=0.95)
+
+    learner = BDP(num_states=10**n_outputs,
+                  num_actions=cart_pole_env.action_space.n,
+                  discount_factor=discount_factor,
+                  policy_update_interval=policy_update_interval,
+                  dirichlet_smoothing_const=dirichlet_smoothing_const,
+                  default_reward=default_reward)
 
     for episode in range(n_episodes):
         x, x_dot, phi, phi_dot = cart_pole_env.reset()
@@ -41,7 +56,7 @@ def cart_pole_train_qlearning(cart_pole_env, max_number_of_steps=500, n_episodes
                                   _to_bin(x_dot, x_dot_bins),
                                   _to_bin(phi_dot, phi_dot_bins)])
 
-        action = learner.set_initial_state(state)
+        action = learner.interact(None, state, None)
 
         for step in range(max_number_of_steps):
             if visualize:
@@ -55,7 +70,7 @@ def cart_pole_train_qlearning(cart_pole_env, max_number_of_steps=500, n_episodes
                                             _to_bin(x_dot, x_dot_bins),
                                             _to_bin(phi_dot, phi_dot_bins)])
 
-            action = learner.learn_observation(state_prime, reward)
+            action = learner.interact(reward, state_prime, done)
 
             if done or step == max_number_of_steps - 1:
                 episode_lengths = np.append(episode_lengths, int(step + 1))
@@ -107,22 +122,26 @@ def _get_state_index(state_bins):
     return state
 
 
-def run_ql_experiments(n_experiments=1,
-                       n_episodes=10,
-                       visualize=False,
-                       m_cart=10,
-                       m_pole=1,
-                       theta_0=85/180*math.pi,
-                       theta_dot_0=0,
-                       time_step=0.05,
-                       positive_reward=1,
-                       negative_reward=-100,
-                       force=12,
-                       log_level=logging.DEBUG):
+def run_bdp_experiments(n_experiments=1,
+                        n_episodes=10,
+                        visualize=False,
+                        m_cart=10,
+                        m_pole=1,
+                        theta_0=85/180*math.pi,
+                        theta_dot_0=0,
+                        time_step=0.05,
+                        positive_reward=1,
+                        negative_reward=-100,
+                        force=12,
+                        discount_factor=0.95,
+                        policy_update_interval=0,
+                        dirichlet_smoothing_const=1,
+                        default_reward=1,
+                        log_level=logging.DEBUG):
     """
-    Wrapper for running experiment of q-learning training on cart pole environment.
+    Wrapper for running experiment of BDP training on cart pole environment.
     Is responsible for environment creation and closing, sets all necessary parameters of environment.
-    Runs n exepriments, where each experiment is training Q-learning agent on the same environment.
+    Runs n exepriments, where each experiment is training BDP agent on the same environment.
     After one agent finished training, environment is reset to the initial state.
     Parameters of the experiment:
     :param n_episodes: number of episodes to perform in each experiment run
@@ -141,7 +160,7 @@ def run_ql_experiments(n_experiments=1,
     :param positive_reward: positive reward for RL agent.
     :param negative_reward: negative reward for RL agent.
     :return: trained Q-learning agent, array of actual episodes length
-    that were returned from cart_pole_train_qlearning()
+    that were returned from cart_pole_train_bdp()
     """
     config = {
         'm_cart': m_cart,
@@ -168,9 +187,13 @@ def run_ql_experiments(n_experiments=1,
     exec_time_s = []
     env = gym.make(env_name)
     for i in range(n_experiments):
-        trained_agent, episodes_length, exec_time = cart_pole_train_qlearning(env,
-                                                                              n_episodes=n_episodes,
-                                                                              visualize=visualize)
+        trained_agent, episodes_length, exec_time = cart_pole_train_bdp(env,
+                                                                        discount_factor=discount_factor,
+                                                                        policy_update_interval=policy_update_interval,
+                                                                        dirichlet_smoothing_const=dirichlet_smoothing_const,
+                                                                        default_reward=default_reward,
+                                                                        n_episodes=n_episodes,
+                                                                        visualize=visualize)
         trained_agent_s.append(trained_agent)
         episodes_length_s.append(episodes_length)
         exec_time_s.append(exec_time)
@@ -183,7 +206,7 @@ def run_ql_experiments(n_experiments=1,
 
 
 if __name__ == "__main__":
-    _, episodes_lengths, exec_times = run_ql_experiments(visualize=True, log_level=logging.INFO)
+    _, episodes_lengths, exec_times = run_bdp_experiments(visualize=False, log_level=logging.INFO)
     print("Experiment length {} s".format(exec_times[0]))
     print(u"Avg episode performance {} {} {}".format(episodes_lengths[0].mean(),
                                                      chr(177),  # plus minus sign
