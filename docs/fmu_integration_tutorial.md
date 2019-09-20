@@ -4,7 +4,7 @@ This file describes in a step-wise manner
 how to integrate your FMU with OpenAI Gym as an environment.
 
 Instructions are illustrated with an example of cart-pole environment 
-simulated by FMU exported in co-simulation mode from JModelica. It can be found in resources folder:
+simulated by FMU exported in co-simulation mode from JModelica (FMI standard v.2.0). It can be found in resources folder:
 `resources/jmodelica/linux/ModelicaGym_CartPole_CS.fmu`
 
 ## Prerequisites
@@ -54,10 +54,11 @@ you should create a class describing this environment.
 
 All abstract logic and default behaviour was already implemented in a toolbox.
 
-To reuse it inherit your class from `JModCSEnv` or `DymolaCSEnv`, depending on what tool you used to compile an FMU.
+To reuse it, inherit your class from `FMI2CSEnv` or `FMI1CSEnv`, 
+depending on what FMI standard was used to compile an FMU.
 
 ```python
-class JModelicaCSCartPoleEnv(JModCSEnv):
+class JModelicaCSCartPoleEnv(FMI2CSEnv):
     ...
 ```
 
@@ -68,6 +69,17 @@ To test the toolbox capability to work with FMU's exported in different tools (D
 we used 2 FMU's compiled from the same model specification. 
 In this case, two environment classes should be written, but code extraction allowed to write common logic just once.
 
+At the same time, toolbox was tested on FMU compiled with different FMI standard versions: 1.0 and 2.0. 
+This is shown in inheritance structure: while ``JModelicaCSCartPoleEnv`` inherits ``FMI2CSEnv``, ``DymolaCSCartPoleEnv``
+inherits ``FMI1CSEnv``.
+
+> **Disclaimer**: It is strongly advised to test environment behaviour to ensure relevant results, 
+when a new FMU is integrated. Certain adjustments in implementation may be required.
+Although FMI standard was developed to ensure tool-independent model sharing, 
+during experiments with Cart-pole and other systems, authors have faced differences/particularities in behaviour
+of FMUs compiled in different tools. E.g. automatic seeding of random generators works differently in Dymola and 
+JModelica-compiled FMUs.
+  
 ### Constructor and configuration
 Next, you should define class constructor. It is advised to use all model parameters as class attributes,
 so you can configure your environment during experiments.
