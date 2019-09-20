@@ -40,8 +40,10 @@ class BDP(object):
             return self.last_action
 
         # Update the reward associated with (s,a,s') if first time.
-        if self.reward[self.last_state, self.last_action, next_state] == self.default_reward:
-            self.reward[self.last_state, self.last_action, next_state] = reward
+        # if self.reward[self.last_state, self.last_action, next_state] == self.default_reward:
+        #    self.reward[self.last_state, self.last_action, next_state] = reward
+
+        self.reward[self.last_state, self.last_action, next_state] = reward
 
         # Update set of states reached by playing a.
         self.transition_observations[self.last_state, self.last_action, next_state] += 1
@@ -87,7 +89,7 @@ class BDP(object):
             if diff < 1e-1:
                 break
             if k > 1e4:
-                raise Exception("Value iteration not converging. Stopped at 1e6 iterations.")
+                raise Exception("Value iteration not converging. Stopped at 1e4 iterations.")
         for s in range(value_dim):
             self.value_table[s] = np.sum(transition_probs[s]*(self.reward[s] +
                                          self.discount_factor*np.array([value, ]*self.num_actions)),

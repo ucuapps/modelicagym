@@ -101,11 +101,33 @@ def policy_update_interval_experiment(puis):
                                          log_level=logging.INFO)
 
 
+def default_reward_experiment(drs):
+    for dr in drs:
+        run_experiment_with_result_files(folder,
+                                         n_experiments=3,
+                                         n_episodes=100,
+                                         visualize=False,
+                                         m_cart=10,
+                                         m_pole=1,
+                                         theta_0=85 / 180 * math.pi,
+                                         theta_dot_0=0,
+                                         time_step=0.05,
+                                         positive_reward=1,
+                                         negative_reward=-100,
+                                         force=15,
+                                         discount_factor=0.95,
+                                         policy_update_interval=50,
+                                         dirichlet_smoothing_const=1,
+                                         default_reward=dr,
+                                         log_level=logging.INFO)
+
+
 if __name__ == "__main__":
     import time
     start = time.time()
     folder = "experiments_results"
-    policy_update_interval_experiment([50])
+    # policy_update_interval_experiment([50])
+    default_reward_experiment([0, 2])
     # following experiments rake significant amount of time, so it is advised to run only one of them at once
     #
     end = time.time()
