@@ -110,7 +110,6 @@ class BDP(object):
         self._value_iteration(transition_probs)
 
     def _argmax_breaking_ties_randomly(self, x):
-        """Taken from Ken."""
         max_value = np.max(x)
         indices_with_max_value = np.flatnonzero(x == max_value)
         return np.random.choice(indices_with_max_value)

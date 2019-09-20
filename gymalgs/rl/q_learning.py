@@ -40,7 +40,8 @@ class QLearner(object):
                  exploration_rate,
                  exploration_decay_rate,
                  n_states,
-                 n_actions):
+                 n_actions,
+                 rand_qtab=False):
 
         self.learning_rate = learning_rate
         self.discount_factor = discount_factor
@@ -53,7 +54,10 @@ class QLearner(object):
         self.state = 0
         self.action = 0
 
-        self.qtable = np.random.uniform(low=-1, high=1, size=(n_states, n_actions))
+        if rand_qtab:
+            self.qtable = np.random.uniform(low=-1, high=1, size=(n_states, n_actions))
+        else:
+            self.qtable = np.zeros((n_states, n_actions))
 
     def use(self, state):
         """
@@ -62,7 +66,7 @@ class QLearner(object):
         :param state: current environment state
         :return: best action in this state according to the learnt Q-table
         """
-        return self.qtable[state].argsort()[-1]
+        return _choose_max_index(self.qtable[state])
 
     def set_initial_state(self, state):
         """
@@ -97,3 +101,9 @@ class QLearner(object):
 
         return self.action
 
+
+# inspired by approach to action selection agents in bayesrl library
+def _choose_max_index(x):
+    max_value = np.max(x)
+    indices_with_max_value = np.flatnonzero(x == max_value)
+    return np.random.choice(indices_with_max_value)
