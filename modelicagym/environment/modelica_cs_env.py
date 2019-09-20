@@ -1,4 +1,4 @@
-from modelicagym.environment import ModelicaBaseEnv, ModelicaType
+from modelicagym.environment import ModelicaBaseEnv, FMIStandardVersion
 import logging
 
 logger = logging.getLogger(__name__)
@@ -13,15 +13,15 @@ class ModelicaCSEnv(ModelicaBaseEnv):
 
     """
 
-    def __init__(self, model_path, config, type, log_level):
+    def __init__(self, model_path, config, fmi_version, log_level):
         """
 
         :param model_path: path to the model FMU. Absolute path is advised.
         :param config: dictionary with model specifications. For more details see ModelicaBaseEnv docs
-        :param type: kind of the Modelica tool that was used for FMU compilation.
+        :param fmi_version: version of FMI standard used in FMU compilation.
         :param log_level: level of logging to be used in experiments on environment.
         """
-        self.type = type
+        self.fmi_version = fmi_version
         logger.setLevel(log_level)
         super().__init__(model_path, "CS", config, log_level)
 
@@ -39,8 +39,7 @@ class ModelicaCSEnv(ModelicaBaseEnv):
         logger.debug("Experiment reset was called. Resetting the model.")
 
         self.model.reset()
-        # particularity of FMU exported from JModelica
-        if self.type == ModelicaType.JModelica:
+        if self.fmi_version == FMIStandardVersion.second:
             self.model.setup_experiment(start_time=0)
 
         self._set_init_parameter()
@@ -56,26 +55,28 @@ class ModelicaCSEnv(ModelicaBaseEnv):
         return self.state
 
 
-class DymolaCSEnv(ModelicaCSEnv):
+class FMI1CSEnv(ModelicaCSEnv):
     """
     Wrapper class.
-    Should be used as a superclass for all environments using FMU exported from Dymola in co-simulation mode.
+    Should be used as a superclass for all environments using FMU exported in co-simulation mode,
+    FMI standard version 1.0.
     Abstract logic is implemented in parent classes.
 
     Refer to the ModelicaBaseEnv docs for detailed instructions on own environment implementation.
     """
 
     def __init__(self, model_path, config, log_level):
-        super().__init__(model_path, config, ModelicaType.Dymola, log_level)
+        super().__init__(model_path, config, FMIStandardVersion.first, log_level)
 
 
-class JModCSEnv(ModelicaCSEnv):
+class FMI2CSEnv(ModelicaCSEnv):
     """
     Wrapper class.
-    Should be used as a superclass for all environments using FMU exported from JModelica in co-simulation mode.
+    Should be used as a superclass for all environments using FMU exported in co-simulation mode.
+    FMI standard version 2.0.
     Abstract logic is implemented in parent classes.
 
     Refer to the ModelicaBaseEnv docs for detailed instructions on own environment implementation.
     """
     def __init__(self, model_path, config, log_level):
-        super().__init__(model_path, config, ModelicaType.JModelica, log_level)
+        super().__init__(model_path, config, FMIStandardVersion.second, log_level)

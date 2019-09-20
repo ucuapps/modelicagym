@@ -8,7 +8,7 @@ import logging
 import math
 import numpy as np
 from gym import spaces
-from modelicagym.environment import JModCSEnv, DymolaCSEnv
+from modelicagym.environment import FMI2CSEnv, FMI1CSEnv
 
 logger = logging.getLogger(__name__)
 
@@ -25,7 +25,6 @@ class CartPoleEnv:
 
 
     """
-
 
     # modelicagym API implementation
     def _is_done(self):
@@ -165,9 +164,9 @@ class CartPoleEnv:
         return self.render(close=True)
 
 
-class JModelicaCSCartPoleEnv(CartPoleEnv, JModCSEnv):
+class JModelicaCSCartPoleEnv(CartPoleEnv, FMI2CSEnv):
     """
-    Wrapper class for creation of cart-pole environment using JModelica-compiled FMU.
+    Wrapper class for creation of cart-pole environment using JModelica-compiled FMU (FMI standard v.2.0).
 
     Attributes:
         m_cart (float): mass of a cart.
@@ -220,9 +219,9 @@ class JModelicaCSCartPoleEnv(CartPoleEnv, JModCSEnv):
                          config, log_level)
 
 
-class DymolaCSCartPoleEnv(CartPoleEnv, DymolaCSEnv):
+class DymolaCSCartPoleEnv(CartPoleEnv, FMI1CSEnv):
     """
-    Wrapper class for creation of cart-pole environment using Dymola-compiled FMU.
+    Wrapper class for creation of cart-pole environment using Dymola-compiled FMU (FMI standard v.1.0).
 
     Attributes:
         m_cart (float): mass of a cart.

@@ -15,6 +15,11 @@ class ModelicaType(Enum):
     OpenModelica = 3
 
 
+class FMIStandardVersion(Enum):
+    first = 1
+    second = 2
+
+
 class ModelicaBaseEnv(gym.Env):
     """
     Superclass for all environments simulated with Modelica FMU exported.
