@@ -6,7 +6,7 @@ setup(
     packages=['modelicagym.examples', 'modelicagym.environment', 'gymalgs.rl'],
     package_dir = {
         'modelicagym.examples': './examples'
-    }
+    },
     url='',
     license='',
     author='Oleh',
