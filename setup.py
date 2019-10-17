@@ -3,13 +3,14 @@ from setuptools import setup
 setup(
     name='modelicagym',
     version='1.0',
-    packages=['modelicagym.examples', 'modelicagym.environment', 'gymalgs.rl'],
-    package_dir = {
-        'modelicagym.examples': './examples'
+    packages=['modelicagym.examples', 'modelicagym.environment', 'modelicagym.gymalgs.rl'],
+    package_dir={
+        'modelicagym.examples': './examples',
+        'modelicagym.gymalgs.rl': './gymalgs/rl'
     },
-    url='',
-    license='',
-    author='Oleh',
-    author_email='',
+    url='github.com/ucuapps/modelicagym',
+    license='GPL-3.0',
+    author='Oleh Lukianykhin',
+    author_email='lukianykhin@ucu.edu.ua',
     description='Library for Reinforcement Learning application to Modelica models using OpenAI Gym'
 )
