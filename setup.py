@@ -1,12 +1,16 @@
 from setuptools import setup
 
 setup(
-    name='modelica-gym',
+    name='modelicagym',
     version='1.0',
-    packages=['examples', 'modelicagym.environment'],
+    packages=['modelicagym.examples', 'modelicagym.environment', 'gymalgs.rl'],
+    package_dir = {
+        'modelicagym.examples': './examples'
+        }
+    )
     url='',
     license='',
     author='Oleh',
     author_email='',
-    description='Library for Reinforcement Learning on Modelica models using OpenAI Gym'
+    description='Library for Reinforcement Learning application to Modelica models using OpenAI Gym'
 )
