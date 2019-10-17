@@ -1,6 +1,6 @@
 import logging
+from ..gymalgs.rl import BDP
 import gym
-from gymalgs.rl import BDP
 import numpy as np
 import math
 import time

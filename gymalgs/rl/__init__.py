@@ -1,3 +1,3 @@
-from gymalgs.rl.q_learning import *
-from gymalgs.rl.bdp import *
+from .q_learning import *
+from .bdp import *
 

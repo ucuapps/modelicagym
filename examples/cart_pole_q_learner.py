@@ -1,6 +1,6 @@
 import logging
+from ..gymalgs.rl import QLearner
 import gym
-from gymalgs.rl import QLearner
 import numpy as np
 import math
 import time
