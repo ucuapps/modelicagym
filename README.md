@@ -18,7 +18,7 @@ Full instalation guide is available [here](https://github.com/ucuapps/modelicagy
 You can test working environment by running 
 [./test_setup.py](https://github.com/ucuapps/modelicagym/blob/master/test/setup_test.py) script.
 
-You can install package itself by running `pip install git+git://github.com/ucuapps/modelicagym.git` 
+You can install package itself by running `pip install git+https://github.com/ucuapps/modelicagym.git` (or `pip3 install git+https://github.com/ucuapps/modelicagym.git` if you have both python versions installed).
 
 ## Examples
 Examples of usage of both packages can be found in examples folder.
