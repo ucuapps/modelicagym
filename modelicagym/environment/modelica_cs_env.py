@@ -13,7 +13,8 @@ class ModelicaCSEnv(ModelicaBaseEnv):
 
     """
 
-    def __init__(self, model_path, config, fmi_version, log_level):
+    def __init__(self, model_path, config, fmi_version, log_level,
+                 simulation_start_time=0):
         """
 
         :param model_path: path to the model FMU. Absolute path is advised.
@@ -21,6 +22,7 @@ class ModelicaCSEnv(ModelicaBaseEnv):
         :param fmi_version: version of FMI standard used in FMU compilation.
         :param log_level: level of logging to be used in experiments on environment.
         """
+        self.simulation_start_time = simulation_start_time
         self.fmi_version = fmi_version
         logger.setLevel(log_level)
         super().__init__(model_path, "CS", config, log_level)
@@ -47,10 +49,11 @@ class ModelicaCSEnv(ModelicaBaseEnv):
 
         # get initial state of the model from the fmu
         self.start = 0
-        self.stop = 0
+        self.stop = self.simulation_start_time
         self.state = self.do_simulation()
 
-        self.stop = self.tau
+        self.start = self.simulation_start_time
+        self.stop = self.start + self.tau
         self.done = self._is_done()
         return self.state
 
@@ -65,8 +68,9 @@ class FMI1CSEnv(ModelicaCSEnv):
     Refer to the ModelicaBaseEnv docs for detailed instructions on own environment implementation.
     """
 
-    def __init__(self, model_path, config, log_level):
-        super().__init__(model_path, config, FMIStandardVersion.first, log_level)
+    def __init__(self, model_path, config, log_level, simulation_start_time=0):
+        super().__init__(model_path, config, FMIStandardVersion.first, log_level,
+                         simulation_start_time=simulation_start_time)
 
 
 class FMI2CSEnv(ModelicaCSEnv):
@@ -78,5 +82,6 @@ class FMI2CSEnv(ModelicaCSEnv):
 
     Refer to the ModelicaBaseEnv docs for detailed instructions on own environment implementation.
     """
-    def __init__(self, model_path, config, log_level):
-        super().__init__(model_path, config, FMIStandardVersion.second, log_level)
+    def __init__(self, model_path, config, log_level, simulation_start_time=0):
+        super().__init__(model_path, config, FMIStandardVersion.second, log_level,
+                         simulation_start_time=simulation_start_time)
