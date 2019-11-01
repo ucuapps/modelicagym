@@ -1,5 +1,5 @@
 import logging
-from ..gymalgs.rl import BDP
+from gymalgs.rl import BDP
 import gym
 import numpy as np
 import math
