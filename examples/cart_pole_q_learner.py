@@ -1,5 +1,5 @@
 import logging
-from ..gymalgs.rl import QLearner
+from gymalgs.rl import QLearner
 import gym
 import numpy as np
 import math

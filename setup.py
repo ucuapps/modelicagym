@@ -3,9 +3,8 @@ from setuptools import setup
 setup(
     name='modelicagym',
     version='1.0',
-    packages=['modelicagym.examples', 'modelicagym.environment', 'modelicagym.gymalgs.rl'],
+    packages=['modelicagym.environment', 'modelicagym.gymalgs.rl'],
     package_dir={
-        'modelicagym.examples': './examples',
         'modelicagym.gymalgs.rl': './gymalgs/rl'
     },
     url='github.com/ucuapps/modelicagym',
