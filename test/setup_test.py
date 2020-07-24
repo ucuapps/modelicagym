@@ -22,7 +22,7 @@ def test_gym(visualize=True):
     import gym
     env = gym.make('CartPole-v0')
     env.reset()
-    for _ in range(1000):
+    for _ in range(10):
         if visualize:
             env.render()
         env.step(env.action_space.sample())
