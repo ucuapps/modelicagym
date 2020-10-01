@@ -1,43 +1,97 @@
 ## Installation instructions
-These instructions can be used to setup environment quickly. However, as it is semi-automated with Anaconda,
-installed libraries are usually of the latest versions.
-To setup environment with specific versions of the required libraries
-please refer to the [old instructions](https://github.com/ucuapps/modelicagym/blob/master/docs/install_old.md).
-
+These instructions can be used to setup environment with specific versions of libraries.
+To this end, corresponding versions should be specified instead of used further.
 
 ### Test setup description
-As for 13.02.2020 such a quick installation leads to the following setup:
+v1.0 of the toolbox was tested on the following setup:
 
 * Ubuntu 18 64 Bit machine
-* Python 3.8.1
+* Python 3.6.8
 * Java 8
-* Assimulo 3.1
-* PyFMI 2.5.7
-* Sundials 5.1.0
-* *(optional)* Ipopt 3.12.12
-* *(optional)* Dymola 2017 - if one wants to to compile own FMU. 
+* Assimulo 2.9
+* PyFMI 2.3.1
+* Sundials 2.4.0
+* Ipopt 3.12.12
+* *(optional)* Dymola 2017 - if one wants to to compile own FMU.
 If one wants to use an FMU exported from Dymola for simulation, licence file should be available.
 * *(optional)* JModelica 2.4 - if one wants to compile own FMU.
 
+### Python and Python modules
+Backward compatibility is expected, but not guaranteed.
+Use Python 3.6, as it was utilized in the test setup.
 
-### Anaconda
-To simplify installation process Anaconda is used. If you have one installed, skip this step.
+#### Install Python and other necessary packages
+	sudo apt-get update	
+	sudo apt-get install python3-pip python3-dev
+	sudo apt-get install libatlas-base-dev gfortran libffi-dev
+	sudo apt-get install libfreetype6-dev
+	sudo apt-get install cmake
 
-First, install *Miniconda* for **Python 3** following the instruction on the official [site](https://docs.conda.io/en/latest/miniconda.html):
-Download corresponding installer and run it.
+You can check Python version with the following command:
 
-Add *conda-forge* as channel:
-```bash
-conda config --add channels conda-forge
-```
+    python3 -V
+    
+#### Install modules
+	pip3 install --upgrade numpy
+    pip3 install --upgrade scipy
+    pip3 install --upgrade nose
+    pip3 install --upgrade pandas
+    pip3 install --upgrade matplotlib
+    pip3 install --upgrade sympy	
+    pip3 install --upgrade jupyter
+    pip3 install --upgrade pytest
+    pip3 install --upgrade Cython
+    pip3 install --upgrade lxml
+### Install PyFMI
+Following steps are executed from your user home directory. 
+If starting from other point, please adjust paths respectively.
 
-Install PyFMI:
-```bash
-conda install pyfmi
-```
+####  Create working dir
+	mkdir pyfmi
+
+#### Install FMI Library
+	cd pyfmi
+    sudo wget http://www.jmodelica.org/fmil/FMILibrary-2.0.3-src.zip
+    sudo unzip FMILibrary-2.0.3-src.zip
+    cd FMILibrary-2.0.3/
+    sudo mkdir build-fmilib && cd build-fmilib
+    sudo cmake -DFMILIB_INSTALL_PREFIX=../install ../
+    sudo make install test
+
+#### Install Sundials
+	cd pyfmi
+	sudo wget http://computation.llnl.gov/projects/sundials-suite-nonlinear-differential-algebraic-equation-solvers/download/sundials-2.4.0.tar.gz
+	tar xzf sundials-2.4.0.tar.gz
+	cd sundials-2.4.0
+	sudo ./configure CFLAGS="-fPIC"
+	sudo make install
+	
+#### Install Assimulo
+	cd pyfmi	
+	sudo wget https://pypi.python.org/packages/4c/c0/19a54949817204313efff9f83f1e4a247edebed0a1cc5a317a95d3f374ae/Assimulo-2.9.zip
+ 	sudo unzip Assimulo-2.9.zip
+	cd Assimulo-2.9
+    sudo python3 setup.py install --sundials-home=/usr/local/ --blas-home=/usr/lib/x86_64-linux-gnu/ --lapack-home=/usr/lib/x86_64-linux-gnu/ --log=DEBUG
+
+#### Install PyFMI
+	cd pyfmi
+	sudo wget https://pypi.python.org/packages/66/60/26664b2b2cad4a7fae409214e2f8901177322d78bfb11ef61e580115c9b8/PyFMI-2.3.1.zip#md5=577829ee1ee83fbb8c28ddf4b82aa4ee
+	sudo unzip PyFMI-2.3.1.zip
+	cd PyFMI-2.3.1
+	sudo python3 setup.py install --fmil-home=/home/<your_username>/pyfmi/FMILibrary-2.0.2b3/install/
+
+You can try installing latest version using pip. 
+However this version & setup was not tested:
+    
+    pip3 install pyfmi
+
 
 #####  Sources: 
-* [PyFMI in Python 3 environment in Ubuntu 18.04](https://stackoverflow.com/questions/59582257/pyfmi-in-python-3-environment-in-ubuntu-18-04)
+* [FMILibrary. Official docs](https://jmodelica.org/fmil/FMILibrary-2.0.3-htmldoc/index.html)
+* [Sundials. Official Installation guide](https://github.com/LLNL/sundials/blob/master/INSTALL_GUIDE.pdf)
+* [Assimulo. Official Installation guide](https://jmodelica.org/assimulo/installation.html)
+* [PyFMI. Official Installation guide](https://jmodelica.org/pyfmi/installation.html)
+* [PyFMI on pypi](https://pypi.org/project/PyFMI/)
 
 ### Install OpenAI gym with libav-tools for visualization purposes
 
@@ -67,9 +121,10 @@ Finally:
     sudo apt install openjdk-8-jdk
 If you are using Oracle distribution of Java 8, this should be fine as well.
 
-## Optional:
+## Optional: 
+
 ### Dev-tools
-It is advised to install PyCharm for convenient work on a project and running examples.
+You may want to install PyCharm and Jupyter Notebooks for convenience. 
 
 #### PyCharm
 Simply execute:
@@ -78,6 +133,15 @@ Simply execute:
     sudo snap install pycharm-community --classic
 
 Run PyCharm from the list of applications.
+
+#### Jupyter Notebook
+You can install it with the following command:
+
+    python3 -m pip install --upgrade pip
+    python3 -m pip install jupyter
+
+Use `jupyter notebook` command to run it. 
+
 
 ### Modelica tools 
 	
@@ -167,5 +231,3 @@ Replace the first line with the actual Dymola version and run the following comm
 
 #### Source
 These instructions were taken from [here](https://simulationresearch.lbl.gov/modelica/installDymolaLinux.html).
-
-
