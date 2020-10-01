@@ -1,9 +1,9 @@
 
-def test_pyfmi():
+def test_pyfmi(mode="CS"):
     from pyfmi import load_fmu
 
-    model = load_fmu("../resources/jmodelica/linux/ModelicaGym_CartPole_CS.fmu",
-                     kind="CS")
+    model = load_fmu(f"../resources/jmodelica/linux/ModelicaGym_CartPole_{mode}.fmu",
+                     kind=mode, log_level=7)
 
     model.reset()
     model.setup_experiment(start_time=0)
@@ -32,4 +32,5 @@ def test_gym(visualize=True):
 
 if __name__ == '__main__':
     test_pyfmi()
+    test_pyfmi("ME")
     test_gym()
