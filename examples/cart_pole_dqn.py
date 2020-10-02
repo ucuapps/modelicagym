@@ -126,9 +126,9 @@ def run_dqn_experiments(n_experiments=1,
                        force=12,
                        log_level=logging.DEBUG):
     """
-    Wrapper for running experiment of q-learning training on cart pole environment.
+    Wrapper for running experiment of DQN training on cart pole environment.
     Is responsible for environment creation and closing, sets all necessary parameters of environment.
-    Runs n exepriments, where each experiment is training Q-learning agent on the same environment.
+    Runs n experiments, where each experiment is training DQN agent on the same environment.
     After one agent finished training, environment is reset to the initial state.
     Parameters of the experiment:
     :param n_episodes: number of episodes to perform in each experiment run
@@ -146,11 +146,11 @@ def run_dqn_experiments(n_experiments=1,
     :param time_step: time difference between simulation steps.
     :param positive_reward: positive reward for RL agent.
     :param negative_reward: negative reward for RL agent.
-    :return: trained Q-learning agent, array of actual episodes length
-    that were returned from cart_pole_train_qlearning()
+    :return: trained DQN agent, array of actual episodes length
+    that were returned from cart_pole_train_dqn()
     """
     config = {
-        'path': "../resources/windows/ModelicaGym_CartPole_CS_12.fmu",
+        'path': "../resources/ModelicaGym_CartPole_CS_12.fmu",
         'm_cart': m_cart,
         'm_pole': m_pole,
         'theta_0': theta_0,
@@ -190,6 +190,7 @@ def run_dqn_experiments(n_experiments=1,
 
 
 if __name__ == "__main__":
+    from pyfmi import load_fmu
     _, episodes_lengths, exec_times = run_dqn_experiments(visualize=True, log_level=logging.INFO)
     print("Experiment length {} s".format(exec_times[0]))
     print(u"Avg episode performance {} {} {}".format(episodes_lengths[0].mean(),
