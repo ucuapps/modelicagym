@@ -163,7 +163,7 @@ def run_ql_experiments(n_experiments=1,
         entry_point='examples:JModelicaCSCartPoleEnv',
         kwargs=config
     )
-    trained_agent_s =[]
+    trained_agent_s = []
     episodes_length_s = []
     exec_time_s = []
     env = gym.make(env_name)
