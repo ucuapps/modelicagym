@@ -17,7 +17,8 @@ def run_experiment_with_result_files(folder,
                                      negative_reward,
                                      force,
                                      log_level,
-                                     binning):
+                                     binning,
+                                     mode):
     """
     Runs experiments with the given configuration and writes episodes length of all experiment as one file
     and execution times of experiments as another.
@@ -32,7 +33,7 @@ def run_experiment_with_result_files(folder,
     :param folder: folder for experiment result files
     :return: None
     """
-    experiment_file_name_prefix = "{}/experiment_{}_{}_{}_{}_{:.0f}_{}_{}_{}_{}_{}_{}_".format(
+    experiment_file_name_prefix = "{}/experiment_{}_{}_{}_{}_{:.0f}_{}_{}_{}_{}_{}_{}_{}_".format(
         folder,
         n_experiments,
         n_episodes,
@@ -44,7 +45,8 @@ def run_experiment_with_result_files(folder,
         positive_reward,
         negative_reward,
         force,
-        binning
+        binning,
+        mode
     )
     _, episodes_lengths, exec_times = run_dqn_experiments(n_experiments=n_experiments,
                                                          n_episodes=n_episodes,
@@ -58,7 +60,8 @@ def run_experiment_with_result_files(folder,
                                                          negative_reward=negative_reward,
                                                          force=force,
                                                          log_level=log_level,
-                                                          binning=binning)
+                                                          binning=binning,
+                                                          mode=mode)
 
     np.savetxt(fname=experiment_file_name_prefix + "episodes_lengths.csv",
                X=np.transpose(episodes_lengths),
@@ -70,7 +73,7 @@ def run_experiment_with_result_files(folder,
                fmt="%.4f")
 
 
-def binning_experiment(folder):
+def binning_experiment(folder, mode="CS"):
     run_experiment_with_result_files(folder,
                                      n_experiments=5,
                                      n_episodes=100,
@@ -84,7 +87,8 @@ def binning_experiment(folder):
                                      negative_reward=-100,
                                      force=11,
                                      log_level=logging.INFO,
-                                     binning=True)
+                                     binning=True,
+                                     mode=mode)
     run_experiment_with_result_files(folder,
                                      n_experiments=5,
                                      n_episodes=100,
@@ -98,13 +102,15 @@ def binning_experiment(folder):
                                      negative_reward=-100,
                                      force=11,
                                      log_level=logging.INFO,
-                                     binning=False)
+                                     binning=False,
+                                     mode=mode)
 
 
 if __name__ == "__main__":
     import time
     start = time.time()
     folder = "experiments_results/dqn"
-    binning_experiment(folder)
+    binning_experiment(folder, mode="ME")
+    binning_experiment(folder, mode="CS")
     end = time.time()
     print("Total execution time {:.2f} seconds".format(end-start))
