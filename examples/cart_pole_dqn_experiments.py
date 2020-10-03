@@ -18,7 +18,8 @@ def run_experiment_with_result_files(folder,
                                      force,
                                      log_level,
                                      binning,
-                                     mode):
+                                     mode,
+                                     exp_id=None):
     """
     Runs experiments with the given configuration and writes episodes length of all experiment as one file
     and execution times of experiments as another.
@@ -33,8 +34,9 @@ def run_experiment_with_result_files(folder,
     :param folder: folder for experiment result files
     :return: None
     """
-    experiment_file_name_prefix = "{}/experiment_{}_{}_{}_{}_{:.0f}_{}_{}_{}_{}_{}_{}_{}_".format(
+    experiment_file_name_prefix = "{}/experiment_{}_{}_{}_{}_{}_{:.0f}_{}_{}_{}_{}_{}_{}_{}_".format(
         folder,
+        exp_id,
         n_experiments,
         n_episodes,
         m_cart,
@@ -126,7 +128,8 @@ if __name__ == "__main__":
                                      force=15,
                                      log_level=logging.INFO,
                                      binning=False,
-                                     mode="CS")
+                                     mode="CS",
+                                     exp_id="n4")
 
     end = time.time()
     print("Total execution time {:.2f} seconds".format(end-start))
