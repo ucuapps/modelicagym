@@ -129,7 +129,7 @@ if __name__ == "__main__":
                                      log_level=logging.INFO,
                                      binning=False,
                                      mode="CS",
-                                     exp_id="n8")
+                                     exp_id="n11")
 
     end = time.time()
     print("Total execution time {:.2f} seconds".format(end-start))
