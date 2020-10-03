@@ -152,6 +152,7 @@ def run_ql_experiments(n_experiments=1,
         'positive_reward': positive_reward,
         'negative_reward': negative_reward,
         'force': force,
+        'path': "../resources/jmodelica/linux/ModelicaGym_CartPole_ME.fmu",
         'log_level': log_level
     }
 

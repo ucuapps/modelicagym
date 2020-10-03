@@ -32,4 +32,5 @@ def test_gym(visualize=True):
 
 if __name__ == '__main__':
     test_pyfmi()
+    test_pyfmi("ME")
     test_gym()
