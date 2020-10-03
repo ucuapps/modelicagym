@@ -8,7 +8,7 @@ import logging
 import math
 import numpy as np
 from gym import spaces
-from modelicagym.environment import FMI2CSEnv, FMI1CSEnv
+from modelicagym.environment import FMI2CSEnv, FMI1CSEnv, FMI2MEEnv
 
 logger = logging.getLogger(__name__)
 
@@ -194,6 +194,61 @@ class JModelicaCSCartPoleEnv(CartPoleEnv, FMI2CSEnv):
                  force,
                  log_level,
                  path="../resources/jmodelica/linux/ModelicaGym_CartPole_CS.fmu"):
+
+        logger.setLevel(log_level)
+
+        self.force = force
+        self.theta_threshold = TWELVE_DEGREES_IN_RAD
+        self.x_threshold = 2.4
+
+        self.viewer = None
+        self.display = None
+        self.pole_transform = None
+        self.cart_transform = None
+
+        config = {
+            'model_input_names': ['f'],
+            'model_output_names': ['x', 'x_dot', 'theta', 'theta_dot'],
+            'model_parameters': {'m_cart': m_cart, 'm_pole': m_pole,
+                                 'theta_0': theta_0, 'theta_dot_0': theta_dot_0},
+            'initial_state': (0, 0, 85 / 180 * math.pi, 0),
+            'time_step': time_step,
+            'positive_reward': positive_reward,
+            'negative_reward': negative_reward
+        }
+        super().__init__(path, config, log_level)
+
+
+class JModelicaMECartPoleEnv(CartPoleEnv, FMI2MEEnv):
+    """
+    Wrapper class for creation of cart-pole environment using JModelica-compiled FMU (FMI standard v.2.0).
+
+    Attributes:
+        m_cart (float): mass of a cart.
+
+        m_pole (float): mass of a pole.
+
+        theta_0 (float): angle of the pole, when experiment starts.
+        It is counted from the positive direction of X-axis. Specified in radians.
+        1/2*pi means pole standing straight on the cast.
+
+        theta_dot_0 (float): angle speed of the poles mass center. I.e. how fast pole angle is changing.
+        time_step (float): time difference between simulation steps.
+        positive_reward (int): positive reward for RL agent.
+        negative_reward (int): negative reward for RL agent.
+    """
+
+    def __init__(self,
+                 m_cart,
+                 m_pole,
+                 theta_0,
+                 theta_dot_0,
+                 time_step,
+                 positive_reward,
+                 negative_reward,
+                 force,
+                 log_level,
+                 path="../resources/jmodelica/linux/ModelicaGym_CartPole_ME.fmu"):
 
         logger.setLevel(log_level)
 
