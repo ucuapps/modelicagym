@@ -116,7 +116,7 @@ if __name__ == "__main__":
     # binning_experiment(folder, mode="CS")
     run_experiment_with_result_files(folder,
                                      n_experiments=5,
-                                     n_episodes=200,
+                                     n_episodes=1000,
                                      visualize=False,
                                      m_cart=10,
                                      m_pole=1,
@@ -129,7 +129,7 @@ if __name__ == "__main__":
                                      log_level=logging.INFO,
                                      binning=False,
                                      mode="CS",
-                                     exp_id="n11")
+                                     exp_id="n14")
 
     end = time.time()
     print("Total execution time {:.2f} seconds".format(end-start))

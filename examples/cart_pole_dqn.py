@@ -27,16 +27,16 @@ def cart_pole_train_dqn(cart_pole_env, max_number_of_steps=500, n_episodes=4, vi
         phi_bins = _get_bins(78/180*math.pi, 102/180*math.pi, 10)
         phi_dot_bins = _get_bins(-2, 2, 10)
 
-    learner = DqnAgent(actions=[-1, 1],
+    learner = DqnAgent(actions=[0, 1],
                        n_state_variables=4,
                        n_hidden_1=64,
                        n_hidden_2=64,
-                       buffer_size=256,
-                       batch_size=32,
+                       buffer_size=512,
+                       batch_size=64,
                        exploration_rate=0.5,
                        expl_rate_decay=0.999,
                        expl_rate_final=0.05,
-                       discount_factor=1,
+                       discount_factor=0.99,
                        target_update=100,
                        expl_decay_step=1
                        )
