@@ -110,7 +110,23 @@ if __name__ == "__main__":
     import time
     start = time.time()
     folder = "experiments_results/dqn"
-    binning_experiment(folder, mode="ME")
-    binning_experiment(folder, mode="CS")
+    # binning_experiment(folder, mode="ME")
+    # binning_experiment(folder, mode="CS")
+    run_experiment_with_result_files(folder,
+                                     n_experiments=5,
+                                     n_episodes=200,
+                                     visualize=False,
+                                     m_cart=10,
+                                     m_pole=1,
+                                     theta_0=85 / 180 * math.pi,
+                                     theta_dot_0=0,
+                                     time_step=0.05,
+                                     positive_reward=1,
+                                     negative_reward=-200,
+                                     force=15,
+                                     log_level=logging.INFO,
+                                     binning=False,
+                                     mode="CS")
+
     end = time.time()
     print("Total execution time {:.2f} seconds".format(end-start))

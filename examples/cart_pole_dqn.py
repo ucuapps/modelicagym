@@ -30,7 +30,7 @@ def cart_pole_train_dqn(cart_pole_env, max_number_of_steps=500, n_episodes=4, vi
     learner = DqnAgent(actions=[-1, 1],
                        n_state_variables=4,
                        n_hidden_1=32,
-                       n_hidden_2=2,
+                       n_hidden_2=32,
                        buffer_size=100,
                        batch_size=32,
                        exploration_rate=0.5,
@@ -38,7 +38,7 @@ def cart_pole_train_dqn(cart_pole_env, max_number_of_steps=500, n_episodes=4, vi
                        expl_rate_final=0.05,
                        discount_factor=0.6,
                        target_update=100,
-                       expl_decay_step=10
+                       expl_decay_step=1
                        )
 
     for episode in range(n_episodes):
