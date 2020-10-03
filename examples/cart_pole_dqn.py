@@ -135,7 +135,8 @@ def run_dqn_experiments(n_experiments=1,
                        negative_reward=-100,
                        force=12,
                        log_level=logging.DEBUG,
-                        binning=False):
+                        binning=False,
+                        mode="CS"):
     """
     Wrapper for running experiment of DQN training on cart pole environment.
     Is responsible for environment creation and closing, sets all necessary parameters of environment.
@@ -160,8 +161,15 @@ def run_dqn_experiments(n_experiments=1,
     :return: trained DQN agent, array of actual episodes length
     that were returned from cart_pole_train_dqn()
     """
+    if mode == "ME":
+        path = "../resources/jmodelica/linux/ModelicaGym_CartPole_ME.fmu"
+        env_entry_point = 'examples:JModelicaMECartPoleEnv'
+    else:
+        path = "../resources/jmodelica/linux/ModelicaGym_CartPole_CS.fmu"
+        env_entry_point = 'examples:JModelicaCSCartPoleEnv'
+
     config = {
-        'path': "../resources/jmodelica/linux/ModelicaGym_CartPole_CS.fmu",
+        'path': path,
         'm_cart': m_cart,
         'm_pole': m_pole,
         'theta_0': theta_0,
@@ -178,7 +186,7 @@ def run_dqn_experiments(n_experiments=1,
 
     register(
         id=env_name,
-        entry_point='examples:JModelicaCSCartPoleEnv',
+        entry_point=env_entry_point,
         kwargs=config
     )
     trained_agent_s = []
@@ -219,3 +227,6 @@ if __name__ == "__main__":
                                                      episodes_lengths[0].std()))
     print(u"Max episode performance {}".format(episodes_lengths[0].max()))
     print(u"All episodes performance {}".format(episodes_lengths))
+
+    _, episodes_lengths, exec_times = run_dqn_experiments(visualize=False, log_level=logging.INFO,
+                                                          binning=False, mode="ME")
