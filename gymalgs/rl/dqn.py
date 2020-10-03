@@ -77,14 +77,14 @@ class DqnAgent:
         self.step_counter += 1
 
         action = self.actions.index(action)
-        self.buffer.push(state, action, reward, next_state)
+        self.buffer.push(state, action, next_state, reward)
 
         if not self.dummy and len(self.buffer) < self.batch_size:
             return self._choose_random_action()
 
         batch = self.buffer.sample(self.batch_size)
         if self.dummy:
-            batch = (state, action, reward, next_state)
+            batch = (state, action, next_state, reward)
         self.train_dqn(batch)
 
         if self.target_update is not None and self.step_counter % self.target_update == 0:

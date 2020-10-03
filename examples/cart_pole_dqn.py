@@ -6,7 +6,8 @@ import math
 import time
 
 
-def cart_pole_train_dqn(cart_pole_env, max_number_of_steps=500, n_episodes=4, visualize=True):
+def cart_pole_train_dqn(cart_pole_env, max_number_of_steps=500, n_episodes=4, visualize=True,
+                        binning=False):
     """
     Runs one experiment of DQN training on cart pole environment
     :param cart_pole_env: environment RL agent will learn on.
@@ -20,12 +21,13 @@ def cart_pole_train_dqn(cart_pole_env, max_number_of_steps=500, n_episodes=4, vi
 
     episode_lengths = np.array([])
 
-    x_bins = _get_bins(-2.4, 2.4, 10)
-    x_dot_bins = _get_bins(-1, 1, 10)
-    phi_bins = _get_bins(78/180*math.pi, 102/180*math.pi, 10)
-    phi_dot_bins = _get_bins(-2, 2, 10)
+    if binning:
+        x_bins = _get_bins(-2.4, 2.4, 10)
+        x_dot_bins = _get_bins(-1, 1, 10)
+        phi_bins = _get_bins(78/180*math.pi, 102/180*math.pi, 10)
+        phi_dot_bins = _get_bins(-2, 2, 10)
 
-    learner = DqnAgent(actions=2,
+    learner = DqnAgent(actions=[-1, 1],
                        n_state_variables=4,
                        n_hidden_1=32,
                        n_hidden_2=2,
@@ -35,18 +37,22 @@ def cart_pole_train_dqn(cart_pole_env, max_number_of_steps=500, n_episodes=4, vi
                        expl_rate_decay=0.999,
                        expl_rate_final=0.05,
                        discount_factor=0.6,
-                       target_update=100
+                       target_update=100,
+                       expl_decay_step=10
                        )
 
     for episode in range(n_episodes):
         x, x_dot, phi, phi_dot = cart_pole_env.reset()
 
-        state = [_to_bin(x, x_bins),
-                  _to_bin(phi, phi_bins),
-                  _to_bin(x_dot, x_dot_bins),
-                  _to_bin(phi_dot, phi_dot_bins)]
+        if binning:
+            state = [_to_bin(x, x_bins),
+                      _to_bin(phi, phi_bins),
+                      _to_bin(x_dot, x_dot_bins),
+                      _to_bin(phi_dot, phi_dot_bins)]
+        else:
+            state = [x, x_dot, phi, phi_dot]
 
-        action = 0
+        action = learner.use(state)
 
         for step in range(max_number_of_steps):
             if visualize:
@@ -55,10 +61,14 @@ def cart_pole_train_dqn(cart_pole_env, max_number_of_steps=500, n_episodes=4, vi
             observation, reward, done, _ = cart_pole_env.step(action)
 
             x, x_dot, phi, phi_dot = observation
-            next_state = [_to_bin(x, x_bins),
-                            _to_bin(phi, phi_bins),
-                            _to_bin(x_dot, x_dot_bins),
-                            _to_bin(phi_dot, phi_dot_bins)]
+
+            if binning:
+                next_state = [_to_bin(x, x_bins),
+                         _to_bin(phi, phi_bins),
+                         _to_bin(x_dot, x_dot_bins),
+                         _to_bin(phi_dot, phi_dot_bins)]
+            else:
+                next_state = [x, x_dot, phi, phi_dot]
 
             action = learner.learn(state, action, reward, next_state)
             state = next_state
@@ -124,7 +134,8 @@ def run_dqn_experiments(n_experiments=1,
                        positive_reward=1,
                        negative_reward=-100,
                        force=12,
-                       log_level=logging.DEBUG):
+                       log_level=logging.DEBUG,
+                        binning=False):
     """
     Wrapper for running experiment of DQN training on cart pole environment.
     Is responsible for environment creation and closing, sets all necessary parameters of environment.
@@ -150,7 +161,7 @@ def run_dqn_experiments(n_experiments=1,
     that were returned from cart_pole_train_dqn()
     """
     config = {
-        'path': "../resources/ModelicaGym_CartPole_CS_12.fmu",
+        'path': "../resources/jmodelica/linux/ModelicaGym_CartPole_CS.fmu",
         'm_cart': m_cart,
         'm_pole': m_pole,
         'theta_0': theta_0,
@@ -177,7 +188,8 @@ def run_dqn_experiments(n_experiments=1,
     for i in range(n_experiments):
         trained_agent, episodes_length, exec_time = cart_pole_train_dqn(env,
                                                                         n_episodes=n_episodes,
-                                                                        visualize=visualize)
+                                                                        visualize=visualize,
+                                                                        binning=binning)
         trained_agent_s.append(trained_agent)
         episodes_length_s.append(episodes_length)
         exec_time_s.append(exec_time)
@@ -190,8 +202,17 @@ def run_dqn_experiments(n_experiments=1,
 
 
 if __name__ == "__main__":
-    from pyfmi import load_fmu
-    _, episodes_lengths, exec_times = run_dqn_experiments(visualize=True, log_level=logging.INFO)
+    _, episodes_lengths, exec_times = run_dqn_experiments(visualize=True, log_level=logging.INFO,
+                                                          binning=True)
+    print("Experiment length {} s".format(exec_times[0]))
+    print(u"Avg episode performance {} {} {}".format(episodes_lengths[0].mean(),
+                                                     chr(177),  # plus minus sign
+                                                     episodes_lengths[0].std()))
+    print(u"Max episode performance {}".format(episodes_lengths[0].max()))
+    print(u"All episodes performance {}".format(episodes_lengths))
+
+    _, episodes_lengths, exec_times = run_dqn_experiments(visualize=True, log_level=logging.INFO,
+                                                          binning=False)
     print("Experiment length {} s".format(exec_times[0]))
     print(u"Avg episode performance {} {} {}".format(episodes_lengths[0].mean(),
                                                      chr(177),  # plus minus sign
