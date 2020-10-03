@@ -95,7 +95,8 @@ class DqnAgent:
     def use(self, state):
         if random.random() > self.get_current_expl_rate():
             state = torch.Tensor(state)
-            optimal_action_index = self.model(state).max(0).indices
+            with torch.no_grad():
+                optimal_action_index = self.model_target(state).max(0).indices
             return self.actions[optimal_action_index]
         else:
             return self._choose_random_action()
