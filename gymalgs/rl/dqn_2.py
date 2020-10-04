@@ -245,6 +245,7 @@ def play_episode(env: gym.Env,
         int: reward earned in this episode
     """
     s = env.reset()
+    s = np.array(s)
     done = False
     total_reward = 0
     episode_length = 0
@@ -253,6 +254,7 @@ def play_episode(env: gym.Env,
 
         a = agent.get_action(s, eps)
         s2, r, done, info = env.step(a)
+        s2 = np.array(s2)
         episode_length += 1
         total_reward += r
 
