@@ -37,7 +37,7 @@ def cart_pole_train_dqn(cart_pole_env, max_number_of_steps=500, n_episodes=4, vi
                        expl_rate_decay=0.999,
                        expl_rate_final=0.05,
                        discount_factor=0.99,
-                       target_update=100,
+                       target_update=1000,
                        expl_decay_step=1
                        )
 

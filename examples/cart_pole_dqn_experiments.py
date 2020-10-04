@@ -124,12 +124,12 @@ if __name__ == "__main__":
                                      theta_dot_0=0,
                                      time_step=0.05,
                                      positive_reward=1,
-                                     negative_reward=-200,
+                                     negative_reward=-10,
                                      force=15,
                                      log_level=logging.INFO,
                                      binning=False,
                                      mode="CS",
-                                     exp_id="n14")
+                                     exp_id="n17")
 
     end = time.time()
     print("Total execution time {:.2f} seconds".format(end-start))

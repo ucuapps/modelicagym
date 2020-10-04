@@ -128,7 +128,8 @@ class DqnAgent:
         # Compute the expected Q values
         expected_state_action_values = (next_state_values * self.discount_factor) + reward_batch
 
-        loss = F.mse_loss(state_action_values, expected_state_action_values.unsqueeze(1))
+        # loss = F.mse_loss(state_action_values, expected_state_action_values.unsqueeze(1))
+        loss = F.smooth_l1_loss(state_action_values, expected_state_action_values.unsqueeze(1))
         return loss
 
     def save(self, path):
