@@ -1,7 +1,6 @@
 import logging
 from collections import deque
 
-from gymalgs.rl import DqnAgent
 import gym
 import numpy as np
 import math
@@ -21,13 +20,13 @@ def cart_pole_train_dqn(cart_pole_env, agent_config, max_number_of_steps=500, n_
     """
 
     start = time.time()
-    input_dim = 4
-    output_dim = 2
-    hidden_layers = 16
-    buffer_capacity = 50000
-    max_episode = 50
-    min_eps = 0.01
-    batch_size = 64
+    input_dim = agent_config.get('input_dim', 4)
+    output_dim = agent_config.get('output_dim', 2)
+    hidden_layers = agent_config.get('hidden_layers', 16)
+    buffer_capacity = agent_config.get('buffer_capacity', 50000)
+    max_episode = agent_config.get('max_episode', 50)
+    min_eps = agent_config.get('min_eps', 0.01)
+    batch_size = agent_config.get('batch_size', 64)
 
     episode_lengths = np.array([])
     agent = DQN2Agent(input_dim, output_dim, hidden_layers)
