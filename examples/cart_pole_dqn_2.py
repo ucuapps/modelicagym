@@ -1,9 +1,13 @@
 import logging
+from collections import deque
+
 from gymalgs.rl import DqnAgent
 import gym
 import numpy as np
 import math
 import time
+
+from gymalgs.rl.dqn_2 import DQN2Agent, ReplayMemory, epsilon_annealing, play_episode
 
 
 def cart_pole_train_dqn(cart_pole_env, agent_config, max_number_of_steps=500, n_episodes=4, visualize=True):
@@ -17,38 +21,34 @@ def cart_pole_train_dqn(cart_pole_env, agent_config, max_number_of_steps=500, n_
     """
 
     start = time.time()
+    input_dim = 4
+    output_dim = 2
+    hidden_layers = 16
+    buffer_capacity = 50000
+    max_episode = 50
+    min_eps = 0.01
+    batch_size = 64
 
     episode_lengths = np.array([])
+    agent = DQN2Agent(input_dim, output_dim, hidden_layers)
+    replay_memory = ReplayMemory(buffer_capacity)
+    rewards = deque(maxlen=100)
 
-    learner = DqnAgent(**agent_config)
+    for i in range(n_episodes):
+        eps = epsilon_annealing(i, max_episode, min_eps)
+        r = play_episode(cart_pole_env, agent, replay_memory, eps, batch_size)
+        print("[Episode: {:5}] Reward: {:5} 𝜺-greedy: {:5.2f}".format(i + 1, r, eps))
 
-    for episode in range(n_episodes):
-        x, x_dot, phi, phi_dot = cart_pole_env.reset()
+        np.append(episode_lengths, r)
+        if len(rewards) == rewards.maxlen:
 
-        state = [x, x_dot, phi, phi_dot]
-
-        action = learner.use(state)
-
-        for step in range(max_number_of_steps):
-            if visualize:
-                cart_pole_env.render()
-
-            observation, reward, done, _ = cart_pole_env.step(action)
-
-            x, x_dot, phi, phi_dot = observation
-
-
-            next_state = [x, x_dot, phi, phi_dot]
-
-            action = learner.learn(state, action, reward, next_state)
-            state = next_state
-            if done or step == max_number_of_steps - 1:
-                episode_lengths = np.append(episode_lengths, int(step + 1))
+            if np.mean(rewards) >= 200:
+                print("Game cleared in {} games with {}".format(i + 1, np.mean(rewards)))
                 break
 
     end = time.time()
     execution_time = end - start
-    return learner, episode_lengths, execution_time
+    return agent, episode_lengths, execution_time
 
 
 def run_dqn_experiments(agent_config,

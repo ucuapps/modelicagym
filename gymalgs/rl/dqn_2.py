@@ -135,7 +135,7 @@ class ReplayMemory(object):
         return len(self.memory)
 
 
-class Agent(object):
+class DQN2Agent(object):
 
     def __init__(self, input_dim: int, output_dim: int, hidden_dim: int) -> None:
         """Agent class that choose action and train
@@ -206,10 +206,10 @@ class Agent(object):
         return loss
 
 
-def train_helper(agent: Agent, minibatch: List[Transition], gamma: float) -> float:
+def train_helper(agent: DQN2Agent, minibatch: List[Transition], gamma: float) -> float:
     """Prepare minibatch and train them
     Args:
-        agent (Agent): Agent has `train(Q_pred, Q_true)` method
+        agent (DQN2Agent): Agent has `train(Q_pred, Q_true)` method
         minibatch (List[Transition]): Minibatch of `Transition`
         gamma (float): Discount rate of Q_target
     Returns:
@@ -230,14 +230,14 @@ def train_helper(agent: Agent, minibatch: List[Transition], gamma: float) -> flo
 
 
 def play_episode(env: gym.Env,
-                 agent: Agent,
+                 agent: DQN2Agent,
                  replay_memory: ReplayMemory,
                  eps: float,
                  batch_size: int) -> int:
     """Play an epsiode and train
     Args:
         env (gym.Env): gym environment (CartPole-v0)
-        agent (Agent): agent will train and get action
+        agent (DQN2Agent): agent will train and get action
         replay_memory (ReplayMemory): trajectory is saved here
         eps (float): 𝜺-greedy for exploration
         batch_size (int): batch size
@@ -247,12 +247,13 @@ def play_episode(env: gym.Env,
     s = env.reset()
     done = False
     total_reward = 0
+    episode_length = 0
 
     while not done:
 
         a = agent.get_action(s, eps)
         s2, r, done, info = env.step(a)
-
+        episode_length += 1
         total_reward += r
 
         if done:
@@ -266,7 +267,7 @@ def play_episode(env: gym.Env,
 
         s = s2
 
-    return total_reward
+    return episode_length
 
 
 def get_env_dim(env: gym.Env) -> Tuple[int, int]:
@@ -312,7 +313,7 @@ def main():
         episodes_length = []
         rewards = deque(maxlen=100)
         input_dim, output_dim = get_env_dim(env)
-        agent = Agent(input_dim, output_dim, FLAGS.hidden_dim)
+        agent = DQN2Agent(input_dim, output_dim, FLAGS.hidden_dim)
         replay_memory = ReplayMemory(FLAGS.capacity)
 
         for i in range(FLAGS.n_episode):
