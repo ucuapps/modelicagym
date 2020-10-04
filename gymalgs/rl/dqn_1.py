@@ -81,12 +81,11 @@ class DqnAgent:
         action = self.actions.index(action)
         self.buffer.push(state, action, next_state, reward)
 
-        if not self.dummy and len(self.buffer) < self.batch_size:
+        if len(self.buffer) < self.batch_size:
             return self._choose_random_action()
 
         batch = self.buffer.sample(self.batch_size)
-        if self.dummy:
-            batch = (state, action, next_state, reward)
+
         self.train_dqn(batch)
 
         if self.target_update is not None and self.step_counter % self.target_update == 0:
@@ -98,8 +97,6 @@ class DqnAgent:
         if random.random() > self.get_current_expl_rate():
             state = torch.Tensor(state)
             with torch.no_grad():
-                temp = self.model(state)
-                temp = temp.max(0)
                 optimal_action_index = self.model(state).max(0).indices
             return self.actions[optimal_action_index]
         else:
@@ -109,6 +106,8 @@ class DqnAgent:
         self.optimizer.zero_grad()
         loss = self.calc_loss(batch)
         loss.backward()
+        for param in self.model.parameters():
+            param.grad.data.clamp_(-1, 1)
         self.optimizer.step()
 
     def calc_loss(self, batch):
@@ -206,9 +205,9 @@ if __name__ == "__main__":
 
     env = gym.make("CartPole-v0")
     agent = DqnAgent(actions=[0, 1], n_state_variables=4, n_hidden_1=16,
-                     n_hidden_2=16, buffer_size=50000, batch_size=64,
+                     n_hidden_2=16, buffer_size=512, batch_size=64,
                      exploration_rate=1, expl_rate_decay=0.99, expl_rate_final=0.01,
-                     discount_factor=0.99, target_update=None, expl_decay_step=1)
+                     discount_factor=0.99, target_update=100, expl_decay_step=1)
 
     rewards = deque(maxlen=100)
     episodes_length = []
