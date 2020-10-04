@@ -35,22 +35,7 @@ def run_experiment_with_result_files(folder,
     :param folder: folder for experiment result files
     :return: None
     """
-    experiment_file_name_prefix = "{}/experiment_{}_{}_{}_{}_{}_{:.0f}_{}_{}_{}_{}_{}_{}_{}_".format(
-        folder,
-        exp_id,
-        n_experiments,
-        n_episodes,
-        m_cart,
-        m_pole,
-        theta_0 * 180 / math.pi,
-        theta_dot_0,
-        time_step,
-        positive_reward,
-        negative_reward,
-        force,
-        binning,
-        mode
-    )
+    experiment_file_name_prefix = f"{folder}/experiment_dqn2_{exp_id}_"
     _, episodes_lengths, exec_times = run_dqn_experiments(agent_config=agent_config,
                                                           n_experiments=n_experiments,
                                                          n_episodes=n_episodes,
