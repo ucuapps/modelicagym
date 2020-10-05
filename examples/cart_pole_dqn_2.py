@@ -38,7 +38,7 @@ def cart_pole_train_dqn(cart_pole_env, agent_config, max_number_of_steps=500, n_
         r = play_episode(cart_pole_env, agent, replay_memory, eps, batch_size)
         print("[Episode: {:5}] Reward: {:5} 𝜺-greedy: {:5.2f}".format(i + 1, r, eps))
 
-        np.append(episode_lengths, r)
+        episode_lengths = np.append(episode_lengths, r)
         if len(rewards) == rewards.maxlen:
 
             if np.mean(rewards) >= 200:
