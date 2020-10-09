@@ -3,8 +3,10 @@
 # https://medium.com/@unnatsingh/deep-q-network-with-pytorch-d1ca6f40bfda
 
 import random
-from collections import namedtuple
+from collections import namedtuple, deque
 
+import gym
+import numpy as np
 import torch
 import torch.nn as nn
 import torch.nn.functional as F
@@ -79,12 +81,11 @@ class DqnAgent:
         action = self.actions.index(action)
         self.buffer.push(state, action, next_state, reward)
 
-        if not self.dummy and len(self.buffer) < self.batch_size:
+        if len(self.buffer) < self.batch_size:
             return self._choose_random_action()
 
         batch = self.buffer.sample(self.batch_size)
-        if self.dummy:
-            batch = (state, action, next_state, reward)
+
         self.train_dqn(batch)
 
         if self.target_update is not None and self.step_counter % self.target_update == 0:
@@ -95,15 +96,18 @@ class DqnAgent:
     def use(self, state):
         if random.random() > self.get_current_expl_rate():
             state = torch.Tensor(state)
-            optimal_action_index = self.model(state).max(0).indices
+            with torch.no_grad():
+                optimal_action_index = self.model(state).max(0).indices
             return self.actions[optimal_action_index]
         else:
             return self._choose_random_action()
 
     def train_dqn(self, batch):
-        loss = self.calc_loss(batch)
         self.optimizer.zero_grad()
+        loss = self.calc_loss(batch)
         loss.backward()
+        for param in self.model.parameters():
+            param.grad.data.clamp_(-1, 1)
         self.optimizer.step()
 
     def calc_loss(self, batch):
@@ -127,7 +131,8 @@ class DqnAgent:
         # Compute the expected Q values
         expected_state_action_values = (next_state_values * self.discount_factor) + reward_batch
 
-        loss = F.mse_loss(state_action_values, expected_state_action_values.unsqueeze(1))
+        # loss = F.mse_loss(state_action_values, expected_state_action_values.unsqueeze(1))
+        loss = F.smooth_l1_loss(state_action_values, expected_state_action_values.unsqueeze(1))
         return loss
 
     def save(self, path):
@@ -135,7 +140,7 @@ class DqnAgent:
 
     def get_current_expl_rate(self):
         to_return = self.exploration_rate
-        print("Current exploration rate was {}".format(to_return))
+        # print("Current exploration rate was {}".format(to_return))
         if self.step_counter % self.expl_decay_step == 0:
             self.exploration_rate *= self.expl_rate_decay
         if self.exploration_rate < self.expl_rate_final:
@@ -144,6 +149,24 @@ class DqnAgent:
 
     def _choose_random_action(self):
         return random.sample(self.actions, k=1)[0]
+
+
+def play_episode(env, agent):
+    x, x_dot, phi, phi_dot = env.reset()
+    state = [x, x_dot, phi, phi_dot]
+    action = 1
+    total_reward = 0
+    done = False
+
+    while not done:
+        next_state, r, done, info = env.step(action)
+        total_reward += r
+        if done:
+            r = -1
+        action = agent.learn(state, action, r, next_state)
+        state = next_state
+
+    return total_reward
 
 
 if __name__ == "__main__":
@@ -179,3 +202,26 @@ if __name__ == "__main__":
     sample = buf.sample(3)
     print(sample)
     agent.train_dqn(sample)
+
+    env = gym.make("CartPole-v0")
+    agent = DqnAgent(actions=[0, 1], n_state_variables=4, n_hidden_1=16,
+                     n_hidden_2=16, buffer_size=512, batch_size=64,
+                     exploration_rate=1, expl_rate_decay=0.99, expl_rate_final=0.01,
+                     discount_factor=0.99, target_update=100, expl_decay_step=1)
+
+    rewards = deque(maxlen=100)
+    episodes_length = []
+
+    for i in range(1000):
+        r = play_episode(env, agent)
+        print("[Episode: {:5}] Reward: {:5} 𝜺-greedy: {:5.2f}".format(i + 1, r, agent.exploration_rate))
+
+        rewards.append(r)
+        episodes_length.append(r)
+        if len(rewards) == rewards.maxlen:
+
+            if np.mean(rewards) >= 200:
+                print("Game cleared in {} games with {}".format(i + 1, np.mean(rewards)))
+                print(episodes_length)
+                break
+

@@ -5,6 +5,7 @@ from examples import run_dqn_experiments
 
 
 def run_experiment_with_result_files(folder,
+                                     agent_config,
                                      n_experiments,
                                      n_episodes,
                                      visualize,
@@ -18,7 +19,8 @@ def run_experiment_with_result_files(folder,
                                      force,
                                      log_level,
                                      binning,
-                                     mode):
+                                     mode,
+                                     exp_id=None):
     """
     Runs experiments with the given configuration and writes episodes length of all experiment as one file
     and execution times of experiments as another.
@@ -33,8 +35,9 @@ def run_experiment_with_result_files(folder,
     :param folder: folder for experiment result files
     :return: None
     """
-    experiment_file_name_prefix = "{}/experiment_{}_{}_{}_{}_{:.0f}_{}_{}_{}_{}_{}_{}_{}_".format(
+    experiment_file_name_prefix = "{}/experiment_{}_{}_{}_{}_{}_{:.0f}_{}_{}_{}_{}_{}_{}_{}_".format(
         folder,
+        exp_id,
         n_experiments,
         n_episodes,
         m_cart,
@@ -49,6 +52,7 @@ def run_experiment_with_result_files(folder,
         mode
     )
     _, episodes_lengths, exec_times = run_dqn_experiments(n_experiments=n_experiments,
+                                                          agent_config=agent_config,
                                                          n_episodes=n_episodes,
                                                          visualize=visualize,
                                                          m_cart=m_cart,
@@ -110,7 +114,57 @@ if __name__ == "__main__":
     import time
     start = time.time()
     folder = "experiments_results/dqn"
-    binning_experiment(folder, mode="ME")
-    binning_experiment(folder, mode="CS")
+    agent_config = {
+        'actions': [0, 1],
+        'n_state_variables': 4,
+        'n_hidden_1': 64,
+        'n_hidden_2': 64,
+        'buffer_size': 512,
+        'batch_size': 64,
+        'exploration_rate': 0.5,
+        'expl_rate_decay': 0.999,
+        'expl_rate_final': 0.05,
+        'discount_factor': 0.99,
+        'target_update': 1000,
+        'expl_decay_step': 1
+    }
+    # binning_experiment(folder, mode="ME")
+    # binning_experiment(folder, mode="CS")
+    run_experiment_with_result_files(folder,
+                                     agent_config=agent_config,
+                                     n_experiments=5,
+                                     n_episodes=1000,
+                                     visualize=False,
+                                     m_cart=10,
+                                     m_pole=1,
+                                     theta_0=85 / 180 * math.pi,
+                                     theta_dot_0=0,
+                                     time_step=0.05,
+                                     positive_reward=1,
+                                     negative_reward=-100,
+                                     force=15,
+                                     log_level=logging.INFO,
+                                     binning=False,
+                                     mode="CS",
+                                     exp_id="n18")
+
+    run_experiment_with_result_files(folder,
+                                     agent_config=agent_config,
+                                     n_experiments=5,
+                                     n_episodes=1000,
+                                     visualize=False,
+                                     m_cart=10,
+                                     m_pole=1,
+                                     theta_0=85 / 180 * math.pi,
+                                     theta_dot_0=0,
+                                     time_step=0.05,
+                                     positive_reward=1,
+                                     negative_reward=-1,
+                                     force=15,
+                                     log_level=logging.INFO,
+                                     binning=False,
+                                     mode="CS",
+                                     exp_id="n19")
+
     end = time.time()
     print("Total execution time {:.2f} seconds".format(end-start))

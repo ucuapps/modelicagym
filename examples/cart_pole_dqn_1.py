@@ -6,7 +6,7 @@ import math
 import time
 
 
-def cart_pole_train_dqn(cart_pole_env, max_number_of_steps=500, n_episodes=4, visualize=True,
+def cart_pole_train_dqn(cart_pole_env, agent_config, max_number_of_steps=500, n_episodes=4, visualize=True,
                         binning=False):
     """
     Runs one experiment of DQN training on cart pole environment
@@ -27,19 +27,7 @@ def cart_pole_train_dqn(cart_pole_env, max_number_of_steps=500, n_episodes=4, vi
         phi_bins = _get_bins(78/180*math.pi, 102/180*math.pi, 10)
         phi_dot_bins = _get_bins(-2, 2, 10)
 
-    learner = DqnAgent(actions=[-1, 1],
-                       n_state_variables=4,
-                       n_hidden_1=32,
-                       n_hidden_2=2,
-                       buffer_size=100,
-                       batch_size=32,
-                       exploration_rate=0.5,
-                       expl_rate_decay=0.999,
-                       expl_rate_final=0.05,
-                       discount_factor=0.6,
-                       target_update=100,
-                       expl_decay_step=10
-                       )
+    learner = DqnAgent(**agent_config)
 
     for episode in range(n_episodes):
         x, x_dot, phi, phi_dot = cart_pole_env.reset()
@@ -123,7 +111,8 @@ def _get_state_index(state_bins):
     return state
 
 
-def run_dqn_experiments(n_experiments=1,
+def run_dqn_experiments(agent_config,
+                        n_experiments=1,
                        n_episodes=10,
                        visualize=False,
                        m_cart=10,
@@ -194,7 +183,7 @@ def run_dqn_experiments(n_experiments=1,
     exec_time_s = []
     env = gym.make(env_name)
     for i in range(n_experiments):
-        trained_agent, episodes_length, exec_time = cart_pole_train_dqn(env,
+        trained_agent, episodes_length, exec_time = cart_pole_train_dqn(env, agent_config,
                                                                         n_episodes=n_episodes,
                                                                         visualize=visualize,
                                                                         binning=binning)
@@ -210,7 +199,21 @@ def run_dqn_experiments(n_experiments=1,
 
 
 if __name__ == "__main__":
-    _, episodes_lengths, exec_times = run_dqn_experiments(visualize=True, log_level=logging.INFO,
+    agent_config = {
+        'actions': [0, 1],
+        'n_state_variables': 4,
+        'n_hidden_1': 64,
+        'n_hidden_2': 64,
+        'buffer_size': 512,
+        'batch_size': 64,
+        'exploration_rate': 0.5,
+        'expl_rate_decay': 0.999,
+        'expl_rate_final': 0.05,
+        'discount_factor': 0.99,
+        'target_update': 1000,
+        'expl_decay_step': 1
+    }
+    _, episodes_lengths, exec_times = run_dqn_experiments(agent_config=agent_config, visualize=True, log_level=logging.INFO,
                                                           binning=True)
     print("Experiment length {} s".format(exec_times[0]))
     print(u"Avg episode performance {} {} {}".format(episodes_lengths[0].mean(),
@@ -219,7 +222,8 @@ if __name__ == "__main__":
     print(u"Max episode performance {}".format(episodes_lengths[0].max()))
     print(u"All episodes performance {}".format(episodes_lengths))
 
-    _, episodes_lengths, exec_times = run_dqn_experiments(visualize=True, log_level=logging.INFO,
+    _, episodes_lengths, exec_times = run_dqn_experiments(agent_config=agent_config,
+                                                          visualize=True, log_level=logging.INFO,
                                                           binning=False)
     print("Experiment length {} s".format(exec_times[0]))
     print(u"Avg episode performance {} {} {}".format(episodes_lengths[0].mean(),
@@ -228,5 +232,6 @@ if __name__ == "__main__":
     print(u"Max episode performance {}".format(episodes_lengths[0].max()))
     print(u"All episodes performance {}".format(episodes_lengths))
 
-    _, episodes_lengths, exec_times = run_dqn_experiments(visualize=False, log_level=logging.INFO,
+    _, episodes_lengths, exec_times = run_dqn_experiments(agent_config=agent_config,
+                                                          visualize=False, log_level=logging.INFO,
                                                           binning=False, mode="ME")
