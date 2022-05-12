@@ -135,7 +135,7 @@ class ModelicaBaseEnv(gym.Env):
                 """You are calling 'step()' even though this environment has already returned done = True.
                 You should always call 'reset()' once you receive 'done = True' -- any further steps are
                 undefined behavior.""")
-            return np.array(self.state), self.negative_reward, self.done, {}
+            return self.state, self.negative_reward, self.done, {}
 
         # check if action is a list. If not - create list of length 1
         try:
