@@ -238,7 +238,7 @@ class ModelicaBaseEnv(gym.Env):
         :return: Values of model outputs as tuple in order specified in `model_outputs` attribute
         """
         model_outputs = self.model_output_names
-        return tuple([result.final(k) for k in model_outputs])
+        return np.array([result.final(k) for k in model_outputs])
 
     def _set_init_parameter(self):
         """
