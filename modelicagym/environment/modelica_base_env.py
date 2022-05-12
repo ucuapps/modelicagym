@@ -135,7 +135,7 @@ class ModelicaBaseEnv(gym.Env):
                 """You are calling 'step()' even though this environment has already returned done = True.
                 You should always call 'reset()' once you receive 'done = True' -- any further steps are
                 undefined behavior.""")
-            return np.array(self.state), self.negative_reward, self.done, {}
+            return self.state, self.negative_reward, self.done, {}
 
         # check if action is a list. If not - create list of length 1
         try:
@@ -239,7 +239,7 @@ class ModelicaBaseEnv(gym.Env):
         :return: Values of model outputs as tuple in order specified in `model_outputs` attribute
         """
         model_outputs = self.model_output_names
-        return tuple([result.final(k) for k in model_outputs])
+        return np.array([result.final(k) for k in model_outputs])
 
     def _set_init_parameter(self):
         """
