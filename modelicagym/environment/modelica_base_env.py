@@ -217,6 +217,7 @@ class ModelicaBaseEnv(gym.Env):
         opts = self.model.simulate_options()
         opts['ncp'] = 50
         opts['initialize'] = False
+        opts["result_handling"] = "memory"
 
         result = self.model.simulate(start_time=self.start, final_time=self.stop, options=opts)
 
